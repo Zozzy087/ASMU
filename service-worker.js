@@ -87,11 +87,11 @@ self.addEventListener('fetch', function(event) {
           .catch(function() {
             // Ha offline vagyunk és a kérés navigációs kérés
             if (event.request.mode === 'navigate') {
-              return caches.match('./offline.html');
+              return caches.match('/offline.html');
             }
             
             // Egyéb esetben próbáljunk valami alapértelmezett erőforrást adni
-            return caches.match('./files/icon-512.png');
+            return caches.match('/files/icon-512.png');
           });
       })
   );

@@ -54,13 +54,14 @@
 	<script src="slide_javascript/slideJS.js"></script>
 	<script type="text/javascript">window.readerConfigLoaded = true;</script>
 	<script>
-	  if ('serviceWorker' in navigator) {
-	    window.addEventListener('load', function() {
-	      navigator.serviceWorker.register('./service-worker.js')
-	        .then(function(registration) { console.log('Service Worker regisztrálva:', registration); })
-	        .catch(function(error) { console.log('Service Worker regisztráció sikertelen:', error); });
-	    });
-	  }
-	</script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log('SW regisztrálva:', reg.scope))
+        .catch(err => console.error('SW hiba:', err));
+    });
+  }
+</script>
+
 </body>
 </html>
