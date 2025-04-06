@@ -1,0 +1,14 @@
+CACHE MANIFEST
+# v1.0.0
+
+CACHE:
+index.html
+# Sorolja fel az összes CSS fájlt
+# Sorolja fel az összes JS fájlt
+# Sorolja fel az összes képet és egyéb erőforrást
+
+NETWORK:
+*
+
+FALLBACK:
+/ offline.html
