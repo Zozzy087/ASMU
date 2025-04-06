@@ -1,25 +1,24 @@
 const CACHE_NAME = 'flipbook-cache-v1';
 const urlsToCache = [
-  './',
-  './index.html',
-  './offline.html',
-  './javascript/config.js',
-  './javascript/LoadingJS.js',
-  './style/style.css',
-  './javascript/deString.js',
-  './javascript/jquery-3.5.1.min.js',
-  './javascript/book.min.js',
-  './javascript/pageItems.min.js',
-  './javascript/main.min.js',
-  './javascript/flipHtml5.hiSlider2.min.js',
-  './style/hiSlider2.min.css',
-  './slide_javascript/slideJS.js',
-  './manifest.json',
-  './files/icon-512.png',
-  './files/icon-192.png',
-  './offline.appcache'
-  // Adja hozzá a flipbook további fájljait - oldalképeket, stb.
+  'index.html',
+  'offline.html',
+  'javascript/config.js',
+  'javascript/LoadingJS.js',
+  'style/style.css',
+  'javascript/deString.js',
+  'javascript/jquery-3.5.1.min.js',
+  'javascript/book.min.js',
+  'javascript/pageItems.min.js',
+  'javascript/main.min.js',
+  'javascript/flipHtml5.hiSlider2.min.js',
+  'style/hiSlider2.min.css',
+  'slide_javascript/slideJS.js',
+  'manifest.json',
+  'files/icon-512.png',
+  'files/icon-192.png',
+  'offline.appcache'
 ];
+
 
 // Telepítéskor cache-eljük az alapvető erőforrásokat
 self.addEventListener('install', function(event) {
@@ -69,9 +68,10 @@ self.addEventListener('fetch', function(event) {
         return fetch(fetchRequest)
           .then(function(response) {
             // Ellenőrizzük, hogy érvényes válasz-e
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
+            if (!response || response.status !== 200) {
+  return response;
+}
+
 
             // Klónozzuk a választ is, mert csak egyszer használható
             var responseToCache = response.clone();
