@@ -1,363 +1,362 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>A Sötét Mágia Útvesztője</title>
-
-  <!-- Meta tagek az original fájlból -->
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#000000">
+  <title>A Sötét Mágia Útvesztője</title>
+  
+  <!-- PWA beállítások -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta http-equiv="Expires" content="0">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Cache-control" content="no-cache">
   <meta http-equiv="Cache" content="no-cache">
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="monitor-signature" content="monitor:player:html5">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-  <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge">
-  <meta name="keywords" content="" />
-  <meta name="description" content="" />
-  <meta name="generator" content="fliphtml5.com" />
   
-  <!-- Közösségi megosztáshoz meta tagek -->
-  <meta name="og:image" content="./files/icon-512.png">
-  <meta property="og:image" content="./files/icon-512.png">
-  <meta property="og:title" content="A Sötét Mágia Útvesztője" />
-  <meta property="og:type" content="article" />
-  <meta property="og:url" content="" />
-  <meta property="og:description" content="" />
-  <meta itemprop="name" content="A Sötét Mágia Útvesztője">
-  <meta itemprop="description" content="">
-  <meta itemprop="image" content="./files/icon-512.png">
-  <meta name="twitter:site" content="@FlipHTML5">
-  <meta name="twitter:title" content="A Sötét Mágia Útvesztője">
-  <meta name="twitter:description" content="">
-  <meta name="twitter:image" content="./files/icon-512.png">
-  <meta name="twitter:card" content="summary_large_image">
-
-  <!-- PWA - EREDETI FORMÁBAN -->
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" type="image/png" href="files/icon-512.png" />
-  <meta name="theme-color" content="#000000" />
-  <script>
-    if ('serviceWorker' in navigator) {
-      try {
-        // Csak ha nem file:// protokollt használunk
-        if (window.location.protocol !== 'file:') {
-          navigator.serviceWorker.register('service-worker.js')
-            .then(reg => console.log("✔ Service Worker regisztrálva:", reg.scope))
-            .catch(err => console.log("⚠️ Service Worker hiba:", err));
-        } else {
-          console.log("Service Worker nem regisztrálható file:// protokollal.");
-        }
-      } catch (e) {
-        console.error("Service Worker hiba:", e);
-      }
-    }
-  </script>
-
-  <!-- Fontok -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- PageFlip -->
   <link rel="stylesheet" href="css/page-flip.min.css" />
-  <script src="js/page-flip.browser.js"></script>
-
-  <!-- Dobókocka -->
-  <script src="js/dice-widget.js"></script>
-
+  
   <style>
-    html, body {
+    body, html {
       margin: 0;
       padding: 0;
+      width: 100%;
       height: 100%;
-      background: #111;
-      font-family: 'Cinzel', serif;
       overflow: hidden;
+      background-color: #323232;
     }
-
-    .book-container {
+    
+    #book {
       width: 100%;
       height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
     }
-
-    #flipbook {
-      width: 100%;
-      height: 100%;
-      max-width: 2000px;
-      max-height: 95vh;
-    }
-
-    .page {
-      width: 100%;
-      height: 100%;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: contain;
-      position: relative;
-    }
-
-    .fullscreen-toggle {
+    
+    /* Pozicionálás az interaktív elemekhez */
+    .page-overlay {
       position: absolute;
-      top: 20px;
-      left: 20px;
-      background: #7f00ff;
-      color: #fff;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      z-index: 1000;
-      font-family: 'Cinzel', serif;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    }
-
-    .dice-button {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      padding: 10px 20px;
-      background: #7f00ff;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      z-index: 1000;
-      font-family: 'Cinzel', serif;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    }
-
-    .dice-results {
-      position: absolute;
-      bottom: 70px;
-      right: 20px;
-      z-index: 1000;
-      background: rgba(0,0,0,0.8);
-      padding: 10px;
-      border-radius: 8px;
-      color: white;
-      font-size: 1rem;
-    }
-
-    .dice-results img {
-      width: 40px;
-      height: 40px;
-    }
-
-    /* Loader */
-    #loader {
-      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: #111;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      flex-direction: column;
+      z-index: 2;
+      pointer-events: none; /* Alapértelmezetten nem fogad kattintásokat */
     }
-
-    .spinner {
+    
+    /* Az interaktív elemek viszont fogadnak kattintásokat */
+    .interactive-element {
+      position: absolute;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    
+    /* Például egy gomb a 2. oldalon */
+    .page2-button {
+      width: 200px;
+      height: 50px;
+      background-color: #9900ff;
+      color: white;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: all 0.3s;
+    }
+    
+    .page2-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+    }
+    
+    /* Dice widget style */
+    #dice-widget-container {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 10px;
+      padding: 10px;
+      display: none;
+    }
+    
+    .dice-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
       width: 50px;
       height: 50px;
-      border: 5px solid rgba(255, 255, 255, 0.3);
+      background: #7f00ff;
+      color: white;
+      border: none;
       border-radius: 50%;
-      border-top-color: #7f00ff;
-      animation: spin 1s ease-in-out infinite;
-      margin-bottom: 20px;
+      cursor: pointer;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Státusz üzenet */
-    #status-message {
+    
+    .mute-toggle {
       position: fixed;
-      bottom: 10px;
-      left: 0;
-      width: 100%;
+      bottom: 20px;
+      left: 20px;
+      z-index: 1000;
+      width: 50px;
+      height: 50px;
+      background: #7f00ff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    #page-indicator {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
       background: rgba(0, 0, 0, 0.7);
       color: white;
-      padding: 8px;
-      text-align: center;
-      font-size: 14px;
-      z-index: 9999;
-    }
-
-    /* Reszponzív beállítások */
-    @media (max-width: 768px) {
-      .fullscreen-toggle, .dice-button {
-        padding: 8px 12px;
-        font-size: 0.9rem;
-      }
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-family: 'Cinzel', serif;
+      font-size: 1.2rem;
+      z-index: 1000;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
-  <!-- Loader -->
-  <div id="loader">
-    <div class="spinner"></div>
-    <div>Betöltés...</div>
-  </div>
+  <!-- Könyv konténer -->
+  <div id="book"></div>
 
-  <!-- Státusz üzenet -->
-  <div id="status-message"></div>
-
-  <div class="book-container">
-    <button class="fullscreen-toggle" onclick="toggleFullscreen()">🔳 Teljes képernyő</button>
-    <button class="dice-button" onclick="showDiceRoll()">🎲 Dobás</button>
-    <div class="dice-results" id="dice-widget-container"></div>
-
-    <div id="flipbook">
-      <!-- Az oldalak ide kerülnek -->
-    </div>
-  </div>
-
+  <!-- Kockadobás widget -->
+  <button class="dice-toggle" onclick="toggleDiceWidget()">🎲</button>
+  <div id="dice-widget-container"></div>
+  
+  <div id="page-indicator">Oldal 1 / 10</div>
+  <button id="mute-button" class="mute-toggle" title="Hang ki/be">🔊</button>
+  
+  <audio id="flipSound" src="sounds/pageturn-102978.mp3" preload="auto"></audio>
+  
+  <script src="js/page-flip.browser.js"></script>
+  
   <script>
-    // Globális változók
-    let pageFlip = null;
-    
-    // Segédfüggvények
-    function showStatus(message, isError = false, duration = 5000) {
-      const statusElement = document.getElementById('status-message');
-      statusElement.textContent = message;
-      statusElement.style.backgroundColor = isError ? 'rgba(220, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.7)';
-      
-      // Időzített elrejtés
-      setTimeout(() => {
-        statusElement.textContent = '';
-      }, duration);
-    }
-
-    // Lokális vagy szerver üzemmód ellenőrzése
-    function isLocalFileMode() {
-      return window.location.protocol === 'file:';
-    }
-
-    // Teljes képernyő funkció
-    function toggleFullscreen() {
-      const elem = document.documentElement;
-      
-      if (!document.fullscreenElement) {
-        elem.requestFullscreen().catch(err => {
-          showStatus(`Teljes képernyő hiba: ${err.message}`, true);
-          console.error(`Teljes képernyő hiba: ${err.message}`);
-        });
+    // Kockadobás widget funkciók
+    function toggleDiceWidget() {
+      const container = document.getElementById('dice-widget-container');
+      if (container.style.display === 'none' || container.style.display === '') {
+        container.style.display = 'block';
+        showDiceRoll();
       } else {
-        document.exitFullscreen();
+        container.style.display = 'none';
       }
     }
 
-    // Dobókocka megjelenítése
     function showDiceRoll() {
-      if (typeof window.showDiceRoll === 'function') {
-        window.showDiceRoll();
-      } else if (typeof rollDice === 'function') {
-        rollDice();
-      } else {
-        showStatus("A dobókocka funkció nem található. Ellenőrizd, hogy a dice-widget.js megfelelően betöltődött-e.", true);
-        console.error("A dobókocka funkció nem található.");
+      const container = document.getElementById("dice-widget-container");
+      if (!container) return;
+
+      container.innerHTML = `
+          <div style="text-align:center; margin-top:20px;">
+              <h3 style="font-family:'Cinzel', serif; color:white; background:black; display:inline-block; padding:10px; border-radius:5px;">
+                  Harci Kockadobás
+              </h3>
+              <br>
+              <button onclick="rollDice()" style="padding:10px 20px; margin-top:10px; background:#7f00ff; color:white; border:none; border-radius:5px; font-size:1.1rem; cursor:pointer;">
+                  Dobás
+              </button>
+              <div class="dice-results" id="dice-images" style="display:flex; justify-content:center; gap:10px; margin-top:20px;"></div>
+              <div id="success-results" style="background:black; color:white; display:inline-block; padding:5px 10px; border-radius:5px; margin-top:10px; font-size:1.2rem;"></div>
+          </div>
+      `;
+    }
+
+    function rollDice() {
+      const diceImages = {
+        1: 'images/d1.png',
+        2: 'images/d2.png',
+        3: 'images/d3.png',
+        4: 'images/d4.png',
+        5: 'images/d5.png',
+        6: 'images/d6.png'
+      };
+
+      const diceContainer = document.getElementById('dice-images');
+      const successResults = document.getElementById('success-results');
+      diceContainer.innerHTML = '';
+
+      let successes = 0;
+
+      for (let i = 0; i < 3; i++) {
+        const roll = Math.floor(Math.random() * 6) + 1;
+        const img = document.createElement('img');
+        img.src = diceImages[roll];
+        img.alt = `Kocka: ${roll}`;
+        img.style.width = '80px';
+        img.style.height = '80px';
+        diceContainer.appendChild(img);
+
+        if (roll >= 4) {
+          successes++;
+        }
       }
+
+      let successText = '';
+      switch (successes) {
+        case 0:
+          successText = 'Nincs Siker';
+          break;
+        case 1:
+          successText = 'Egy Siker';
+          break;
+        case 2:
+          successText = 'Két Siker';
+          break;
+        case 3:
+          successText = 'Három Siker';
+          break;
+      }
+
+      successResults.textContent = successText;
     }
     
-    // Oldalak létrehozása
-    function createPages() {
-      const flipbook = document.getElementById('flipbook');
-      const pages = [
-        { path: 'images/oldalak/borito.webp', title: 'Borító' },
-        { path: 'images/oldalak/elso-oldal.webp', title: 'Első oldal' },
-        { path: 'images/oldalak/masodik-oldal.webp', title: 'Második oldal' },
-        { path: 'images/oldalak/harmadik-oldal.webp', title: 'Harmadik oldal' },
-        { path: 'images/oldalak/negyedik-oldal.webp', title: 'Negyedik oldal' },
-        { path: 'images/oldalak/otodik-oldal.webp', title: 'Ötödik oldal' },
-        { path: 'images/oldalak/hatodik-oldal.webp', title: 'Hatodik oldal' },
-        { path: 'images/oldalak/hetedik-oldal.webp', title: 'Hetedik oldal' },
-        { path: 'images/oldalak/nyolcadik-oldal.webp', title: 'Nyolcadik oldal' },
-        { path: 'images/oldalak/kilencedik-oldal.webp', title: 'Kilencedik oldal' }
+    // Az oldalak interaktív elemeinek definíciója
+    const pageOverlays = {
+      // Az első oldal (borító vagy impresszum) nem igényel interaktív elemet
+      'page0': { overlay: null },
+      
+      // A második oldal - adunk egy gombot az alsó részre
+      'page1': {
+        overlay: function(parent) {
+          const overlay = document.createElement('div');
+          overlay.className = 'page-overlay';
+          
+          // Gomb hozzáadása
+          const button = document.createElement('div');
+          button.className = 'interactive-element page2-button';
+          button.textContent = 'KATTINTS RÁM!';
+          button.style.left = '50%';
+          button.style.top = '70%';
+          button.style.transform = 'translate(-50%, -50%)';
+          button.addEventListener('click', function() {
+            alert('Hamarosan érkezik a folytatás!');
+          });
+          
+          overlay.appendChild(button);
+          return overlay;
+        }
+      },
+      
+      // További oldalak
+      'page2': { overlay: null },
+      'page3': { overlay: null },
+      // ... stb.
+    };
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      const pageFlip = new St.PageFlip(document.getElementById("book"), {
+        width: 1979,
+        height: 2800,
+        size: "stretch",
+        minWidth: 300,
+        maxWidth: 1979,
+        minHeight: 400,
+        maxHeight: 2800,
+        maxShadowOpacity: 0.5,
+        showCover: true,
+        mobileScrollSupport: true
+      });
+      
+      // Az oldalak létrehozása Canva webp képekből
+      const pageImages = [
+        'images/oldalak/borito.webp',
+        'images/oldalak/elso-oldal.webp',
+        'images/oldalak/masodik-oldal.webp',
+        'images/oldalak/harmadik-oldal.webp',
+        'images/oldalak/negyedik-oldal.webp',
+        'images/oldalak/otodik-oldal.webp',
+        'images/oldalak/hatodik-oldal.webp',
+        'images/oldalak/hetedik-oldal.webp',
+        'images/oldalak/nyolcadik-oldal.webp',
+        'images/oldalak/kilencedik-oldal.webp'
       ];
       
-      // Oldalak létrehozása
-      flipbook.innerHTML = '';
-      for (const page of pages) {
-        const pageDiv = document.createElement('div');
-        pageDiv.className = 'page';
-        pageDiv.style.backgroundImage = `url('${page.path}')`;
-        pageDiv.setAttribute('data-density', 'soft');
-        flipbook.appendChild(pageDiv);
-      }
-    }
-    
-    // Könyv inicializálása
-    function initBook() {
-      const pageFlipElement = document.getElementById('flipbook');
+      // HTML oldalak létrehozása
+      const pageElements = [];
       
-      try {
-        // Oldalak létrehozása
-        createPages();
+      // Canva képek betöltése és az interaktív elemek hozzáadása
+      pageImages.forEach((imageSrc, index) => {
+        const pageElement = document.createElement('div');
+        pageElement.className = 'page-element';
         
-        // PageFlip inicializálása
-        pageFlip = new St.PageFlip(pageFlipElement, {
-          width: 989,  // Eredeti méret
-          height: 1400, // Eredeti méret
-          size: "stretch",
-          showCover: true,
-          minWidth: 200,
-          maxWidth: 2000,
-          minHeight: 300,
-          maxHeight: 2800,
-          autoSize: true,
-          drawShadow: true,
-          flippingTime: 1000,
-          usePortrait: true,
-          startPage: 0,
-          mobileScrollSupport: true
-        });
-        
-        // Oldalak betöltése
-        pageFlip.loadFromHTML(document.querySelectorAll('.page'));
-        
-        // Eseménykezelők
-        pageFlip.on('flip', (e) => {
-          console.log(`Oldal fordítás: ${e.data}`);
-        });
-        
-        // Ablakméret változásnál frissítés
-        window.addEventListener('resize', function() {
-          if (pageFlip) {
-            // Csak a pageFlip.resize() függvényt használjuk
-            pageFlip.resize();
-          }
-        });
-        
-        // Töltőképernyő elrejtése
-        document.getElementById('loader').style.display = 'none';
-        
-        // PWA figyelmeztetés lokális módban
-        if (isLocalFileMode()) {
-          showStatus("Az oldal lokális fájlként fut. A PWA és egyéb funkciók csak webszerveren működnek teljesen.", false, 10000);
+        // Első és utolsó oldal keményborítású
+        if (index === 0 || index === pageImages.length - 1) {
+          pageElement.setAttribute('data-density', 'hard');
         }
-      } catch (error) {
-        console.error("Könyv inicializálási hiba:", error);
-        showStatus(`Hiba a könyv betöltésekor: ${error.message}`, true, 0);
-        document.getElementById('loader').style.display = 'none';
-      }
-    }
-    
-    // Oldal betöltése után
-    document.addEventListener('DOMContentLoaded', function() {
-      // Könyv inicializálása rövid késleltetéssel
-      setTimeout(initBook, 500);
+        
+        // Háttérkép (Canva exportált kép)
+        const pageBackground = document.createElement('div');
+        pageBackground.className = 'page-background';
+        pageBackground.style.width = '100%';
+        pageBackground.style.height = '100%';
+        pageBackground.style.backgroundImage = `url('${imageSrc}')`;
+        pageBackground.style.backgroundSize = 'cover';
+        pageBackground.style.backgroundPosition = 'center';
+        pageBackground.style.position = 'absolute';
+        pageBackground.style.top = '0';
+        pageBackground.style.left = '0';
+        
+        pageElement.appendChild(pageBackground);
+        
+        // Interaktív fedőréteg hozzáadása, ha van definiálva
+        const pageId = `page${index}`;
+        if (pageOverlays[pageId] && pageOverlays[pageId].overlay) {
+          const overlay = pageOverlays[pageId].overlay(pageElement);
+          if (overlay) {
+            pageElement.appendChild(overlay);
+          }
+        }
+        
+        pageElements.push(pageElement);
+      });
+      
+      // Oldalak betöltése
+      pageFlip.loadFromHTML(pageElements);
+      
+      // Audio
+      const flipSound = document.getElementById("flipSound");
+      const muteButton = document.getElementById("mute-button");
+      let isMuted = false;
+      
+      // Némítás gomb működése
+      muteButton.addEventListener("click", () => {
+        isMuted = !isMuted;
+        muteButton.textContent = isMuted ? "🔇" : "🔊";
+      });
+      
+      // Oldalszám frissítése induláskor
+      const pageIndicator = document.getElementById("page-indicator");
+      pageIndicator.textContent = `Oldal 1 / ${pageFlip.getPageCount()}`;
+      
+      // Lapozás esemény
+      pageFlip.on('flip', (e) => {
+        if (!isMuted) {
+          flipSound.currentTime = 0;
+          flipSound.play();
+        }
+        
+        // Oldalszám frissítése
+        pageIndicator.textContent = `Oldal ${e.data + 1} / ${pageFlip.getPageCount()}`;
+      });
     });
   </script>
 </body>
