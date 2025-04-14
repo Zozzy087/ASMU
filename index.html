@@ -221,41 +221,7 @@
       font-size: 1.2rem;
     }
 	
-	#book {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  perspective: 2000px;
-  overflow: hidden;
-  display: flex;
-}
-
-.page {
-  width: 50%;
-  height: 100%;
-  background-color: #fff;
-  overflow: auto;
-  position: relative;
-  transition: transform 0.8s ease, z-index 0.8s;
-  backface-visibility: hidden;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
-  z-index: 1;
-  padding: 20px;
-}
-
-/* Bal oldal: középen forog jobbra */
-#left-page {
-  transform-origin: right center;
-  border-right: 1px solid #000;
-}
-
-/* Jobb oldal: középen forog balra */
-#right-page {
-  transform-origin: left center;
-  border-left: 1px solid #000;
-}
-
-#book-container {
+	#book-container {
   width: 100%;
   height: 100vh;
   overflow: hidden;
@@ -281,6 +247,24 @@
   z-index: 1;
 }
 
+#book-page.animate-out-left {
+  transform: translateX(-100%) rotateY(-15deg);
+  opacity: 0;
+  z-index: 0;
+}
+
+#book-page.animate-out-right {
+  transform: translateX(100%) rotateY(15deg);
+  opacity: 0;
+  z-index: 0;
+}
+
+#book-page.animate-in {
+  transform: translateX(0) rotateY(0);
+  opacity: 1;
+  z-index: 1;
+}
+
   </style>
 </head>
 <body>
@@ -299,11 +283,9 @@
   
   <!-- Könyv konténer helyett iframe alapú megoldás -->
 
-  <div id="book">
-  <div class="page" id="left-page"></div>
-  <div class="page" id="right-page"></div>
-</div>
-
+  <div id="book-container">
+    <iframe id="book-page" src="pages/borito.html"></iframe>
+  </div>
 
   <div class="controls">
     <button onclick="prevPage()">◀ Előző oldal</button>
@@ -465,64 +447,56 @@
   <script>
     // CSAK EZEK MARADJANAK, EGYSZER:
     let currentPage = 0;
-const totalPages = 300;
-const leftPage = document.getElementById('left-page');
-const rightPage = document.getElementById('right-page');
-const pageIndicator = document.getElementById('page-indicator');
-const flipSound = document.getElementById('flipSound');
+    const totalPages = 300;
+    const iframe = document.getElementById('book-page');
+    const pageIndicator = document.getElementById('page-indicator');
+    const flipSound = document.getElementById('flipSound');
+    const muteButton = document.getElementById('mute-button');
 
-function loadPageContent(pageNumber, target) {
-  if (pageNumber < 0 || pageNumber > totalPages) {
-    target.innerHTML = '';
-    return;
-  }
-
-  const url = pageNumber === 0 ? 'pages/borito.html' : `pages/${pageNumber}.html`;
-
-  fetch(url)
-    .then(response => response.text())
-    .then(html => {
-      target.innerHTML = html;
-    });
-}
-
-function updatePageIndicator() {
+    function updatePageIndicator() {
   if (currentPage === 0) {
-    pageIndicator.textContent = 'Borító';
   } else {
     pageIndicator.textContent = `Oldal ${currentPage} / ${totalPages}`;
   }
 }
 
-function goToPage(pageNumber) {
+
+    function goToPage(pageNumber) {
   if (pageNumber < 0 || pageNumber > totalPages || pageNumber === currentPage) return;
 
-  const forward = pageNumber > currentPage;
+  const goingForward = pageNumber > currentPage;
 
-  // Lap animáció (balról jobbra vagy vissza)
-  const turningPage = forward ? rightPage : leftPage;
-  turningPage.style.zIndex = 2;
-  turningPage.style.transform = `rotateY(${forward ? -180 : 180}deg)`;
+  // Animáció indul
+  iframe.classList.remove('animate-in');
+  iframe.classList.add(goingForward ? 'animate-out-left' : 'animate-out-right');
 
   setTimeout(() => {
+    iframe.onload = () => {
+      // Miután új oldal betöltődött, animáció be
+      iframe.classList.remove('animate-out-left', 'animate-out-right');
+      void iframe.offsetWidth; // force reflow (hack)
+      iframe.classList.add('animate-in');
+      updatePageIndicator();
+    };
+
+    if (pageNumber === 0) {
+      iframe.src = 'pages/borito.html';
+    } else {
+      iframe.src = `pages/${pageNumber}.html`;
+    }
+
     currentPage = pageNumber;
-    loadPageContent(currentPage - 1, leftPage);
-    loadPageContent(currentPage, rightPage);
-    turningPage.style.transform = 'rotateY(0deg)';
-    turningPage.style.zIndex = 1;
-    updatePageIndicator();
     if (!flipSound.muted) flipSound.play();
-  }, 800); // időzítés passzoljon a CSS transition időhöz
+
+  }, 0); // animációs idő kb. 5.3s
 }
 
-function nextPage() {
-  if (currentPage < totalPages) goToPage(currentPage + 1);
-}
 
-function prevPage() {
+
+    function nextPage() { goToPage(currentPage + 1); }
+    function prevPage() {
   if (currentPage > 0) goToPage(currentPage - 1);
 }
-
 
 
     muteButton.addEventListener('click', () => {
@@ -562,13 +536,6 @@ function prevPage() {
     }
 
     updatePageIndicator();
-	
-	document.addEventListener('DOMContentLoaded', () => {
-  loadPageContent(0, leftPage);     // borító
-  loadPageContent(1, rightPage);    // első oldal
-  updatePageIndicator();
-});
-
   </script>
 </body>
 </html>
