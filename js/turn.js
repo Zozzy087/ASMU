@@ -1640,7 +1640,7 @@ flipMethods = {
 
 				var that = this, point = (data.point && data.point.corner==c.corner) ? data.point : flipMethods._c.call(this, c.corner, 1);
 			
-				this.animatef({from: [point.x, point.y], to:[c.x, c.y], duration: 6600, frame: function(v) {
+				this.animatef({from: [point.x, point.y], to:[c.x, c.y], duration: 500, frame: function(v) {
 					c.x = Math.round(v[0]);
 					c.y = Math.round(v[1]);
 					flipMethods._fold.call(that, c);
@@ -1895,6 +1895,7 @@ $.extend($.fn, {
 				len = point.to.length,
 				that = this,
 				fps = point.fps || 30,
+				point.duration = 3000; // vagy 5000 ms, ha még lassabb kell
 				time = - fps,
 				f = function() {
 					var j, v = [];
