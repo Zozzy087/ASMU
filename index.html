@@ -506,23 +506,48 @@
       
       // Könyv méretének frissítése a képernyőhöz
       function updateBookSize() {
-        let width = $(window).width();
-        let height = $(window).height();
-        
-        // Portré vagy tájkép mód
-        if (width < height) {
-          // Portré mód
-          $("#book").turn("display", "single");
-          $("#book").turn("size", Math.min(width * 0.9, 800), Math.min(height * 0.7, 600));
-        } else {
-          // Tájkép mód (továbbra is egy oldal)
-          $("#book").turn("display", "single");
-          $("#book").turn("size", Math.min(width * 0.5, 800), Math.min(height * 0.8, 600));
-        }
-        
-        // Középre igazítás
-        $("#book").turn("center");
-      }
+  const windowWidth = window.innerWidth;
+  const windowHeight = window.innerHeight;
+
+  // Alap méretarány megtartása (pl. A4)
+  const aspectRatio = 4 / 3; // vagy: 3/4 ha fordított kell
+
+  // Maximális magasság kihasználása
+  const maxHeight = windowHeight * 0.95;
+  let newHeight = maxHeight;
+  let newWidth = newHeight * aspectRatio;
+
+  // Ha túlnyúlik a szélességen, akkor újraszámolás
+  if (newWidth > windowWidth * 0.95) {
+    newWidth = windowWidth * 0.95;
+    newHeight = newWidth / aspectRatio;
+  }
+
+  // Méretezés alkalmazása
+  $("#book").turn("size", newWidth, newHeight);
+  $("#book").css({
+    width: newWidth + "px",
+    height: newHeight + "px"
+  });
+
+  // Középre igazítás
+  $("#book").turn("center");
+}
+
+// Egérkattintás figyelése a könyv területén
+$("#book").on("click", function (e) {
+  const width = $(this).width();
+  const clickX = e.pageX - $(this).offset().left;
+
+  if (clickX < width / 2) {
+    // Bal oldalra kattintás: vissza
+    $(this).turn("previous");
+  } else {
+    // Jobb oldalra kattintás: előre
+    $(this).turn("next");
+  }
+});
+
       
       // Eseménykezelők beállítása
       muteButton.addEventListener("click", () => {
