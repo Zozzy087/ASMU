@@ -95,18 +95,6 @@
       left: 0;
     }
     
-    /* Borító és utolsó oldal */
-    .hard-cover {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      background-color: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
-    
     /* Egyéb tartalom stílusok */
     .page-dark {
       background-color: #333;
@@ -324,7 +312,7 @@
       font-size: clamp(14px, 2.5vw, 18px);
     }
     
-    /* StPageFlip stílusok beágyazva */
+    /* StPageFlip stílusok felülbírálása egyoldalas megjelenítéshez */
     .stf__parent {
       position: relative;
       display: block;
@@ -366,6 +354,14 @@
       position: absolute;
       left: 0;
       top: 0;
+    }
+    
+    /* Egyedi oldalméretezés - mindig teljes oldal */
+    .page {
+      width: 100% !important;
+      max-width: 800px !important; /* Szélesebb oldalak */
+      margin: 0 auto !important;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
     }
   </style>
 </head>
@@ -551,19 +547,20 @@
   document.addEventListener("DOMContentLoaded", function () {
     const loadingText = document.getElementById('loading-text');
 
+    // Portré mód kikényszerítése a könyvnél - ez biztosítja, hogy mindig egy oldal látszódjon
     const pageFlip = new St.PageFlip(document.getElementById("book"), {
       size: "stretch",
       minWidth: 300,
-      maxWidth: 1000,
+      maxWidth: 1200, // Növelt szélesség
       minHeight: 400,
       maxHeight: 1400,
-      width: 640,
+      width: 850, // Szélesebb oldal alapméret
       height: 900,
       maxShadowOpacity: 0.5,
-      showCover: false,
+      showCover: false, // Nincs különleges kezelés a borítónak
       mobileScrollSupport: true,
       flippingTime: 1000,
-      usePortrait: true,
+      usePortrait: true, // Mindig portré mód - ez biztosítja az egy oldalas megjelenítést
       drawShadow: true,
       startZIndex: 5,
       autoSize: true,
@@ -583,8 +580,10 @@
       { type: 'html', path: 'pages/oldal-9.html' }
     ];
 
+    // Kezdeti frissítés a méretezéshez
     setTimeout(() => pageFlip.update(), 100);
 
+    // Oldalak betöltése
     loadMixedPages(pages, pageFlip).then(() => {
       console.log("Könyv sikeresen betöltve");
     }).catch(error => {
@@ -618,6 +617,9 @@
       document.getElementById('loading').style.display = 'none';
       pageIndicator.textContent = `Oldal 1 / ${pageFlip.getPageCount()}`;
       handlePageLinks(pageFlip);
+      
+      // Kiegészítő beállítás az egyoldalas megjelenéshez
+      forceSinglePageMode(pageFlip);
     });
 
     pageFlip.on('flip', (e) => {
@@ -628,20 +630,60 @@
       pageIndicator.textContent = `Oldal ${e.data + 1} / ${pageFlip.getPageCount()}`;
       fullscreenBtn.style.display = e.data === 0 ? "block" : "none";
       setTimeout(() => handlePageLinks(pageFlip), 100);
+      
+      // Újra érvényesítjük az egyoldalas megjelenést lapozás után
+      forceSinglePageMode(pageFlip);
     });
 
     pageFlip.on('changeOrientation', () => {
       pageFlip.update();
+      // Orientációváltáskor ismét kikényszerítjük az egy oldalas nézetet
+      forceSinglePageMode(pageFlip);
     });
 
     window.addEventListener('resize', () => {
       pageFlip.update();
+      // Átméretezéskor ismét kikényszerítjük az egy oldalas nézetet
+      forceSinglePageMode(pageFlip);
     });
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight') pageFlip.flipNext();
       else if (e.key === 'ArrowLeft') pageFlip.flipPrev();
     });
+    
+    // Portré mód kikényszerítése - egy oldalas megjelenés
+    function forceSinglePageMode(pageFlip) {
+      // A portrait osztály hozzáadása a wrapper elemhez
+      const wrapper = document.querySelector('.stf__wrapper');
+      if (wrapper) {
+        wrapper.classList.remove('--landscape');
+        wrapper.classList.add('--portrait');
+      }
+      
+      // Ha van bármilyen beállítás a könyvtárban, ami ezt befolyásolja
+      if (typeof pageFlip.setOrientation === 'function') {
+        pageFlip.setOrientation('portrait');
+      }
+      
+      // DOM manipuláció a lapozás fázisa után
+      setTimeout(() => {
+        // Minden oldal szélességét teljes szélességűre állítjuk
+        document.querySelectorAll('.page').forEach(page => {
+          page.style.width = '100%';
+          page.style.maxWidth = '800px'; // Szélesebb oldalak
+          page.style.margin = '0 auto';
+        });
+        
+        // Ha van oldalpár, csak az egyik oldalt jelenítjük meg
+        const visiblePages = document.querySelectorAll('.stf__item[style*="display: block"]');
+        if (visiblePages.length > 1) {
+          for (let i = 1; i < visiblePages.length; i++) {
+            visiblePages[i].style.display = 'none';
+          }
+        }
+      }, 50);
+    }
   });
 
   async function loadMixedPages(pages, pageFlip) {
@@ -655,6 +697,9 @@
         loadingText.textContent = `Betöltés: ${loadedCount + 1}/${totalPages}`;
         const pageElement = document.createElement('div');
         pageElement.className = 'page';
+        
+        // Biztosítjuk, hogy minden oldal puha legyen
+        pageElement.setAttribute('data-density', 'soft');
 
         if (page.type === 'image') {
           const img = document.createElement('img');
@@ -683,13 +728,25 @@
 
         pageElements.push(pageElement);
         loadedCount++;
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 50));
       } catch (error) {
         console.error('Általános hiba oldal betöltésekor:', error);
       }
     }
 
-    pageFlip.loadFromHTML(pageElements);
+    // Egyoldalas nézethez optimalizált betöltés
+    const customSettings = { usePortrait: true };
+    pageFlip.loadFromHTML(pageElements, customSettings);
+    
+    // Kezdeti lépés az egyoldalas nézet kikényszerítéséhez
+    setTimeout(() => {
+      document.querySelectorAll('.page').forEach(page => {
+        page.style.width = '100%';
+        page.style.maxWidth = '800px';
+        page.style.margin = '0 auto';
+      });
+    }, 100);
+    
     return pageFlip;
   }
 
@@ -705,7 +762,5 @@
     });
   }
 </script>
-
-
 </body>
 </html>
