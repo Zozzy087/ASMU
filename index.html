@@ -291,10 +291,14 @@
   <button id="mute-button" class="mute-toggle" title="Hang ki/be">🔊</button>
 
   <!-- Kockadobás widgetek -->
-  <button class="dice-toggle" onclick="toggleDiceWidget()" title="3 Kockás dobás">SEGGARC</button>
+  <button class="dice-toggle" onclick="toggleDiceWidget()" title="3 Kockás dobás" style="padding: 4px 6px;">
+    <span style="font-size: 15px;">🎲🎲🎲</span>
+  </button>
   <div id="dice-widget-container"></div>
   
-  <button class="single-dice-toggle" onclick="toggleSingleDiceWidget()" title="1 Kockás dobás">🎲</button>
+  <button class="single-dice-toggle" onclick="toggleSingleDiceWidget()" title="1 Kockás dobás" style="padding: 4px 6px;">
+    <span style="font-size: 20px;">🎲</span>
+  </button>
   <div id="single-dice-widget-container"></div>
 
   <script>
