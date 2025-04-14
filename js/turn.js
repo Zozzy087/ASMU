@@ -1879,41 +1879,22 @@ $.extend($.fn, {
 	},
 
 	animatef: function(point) {
+  var data = this.data();
 
-		var data = this.data();
+  if (data.effect)
+    clearInterval(data.effect.handle);
 
-		if (data.effect)
-			clearInterval(data.effect.handle);
+  if (point) {
 
-		if (point) {
+    // 🔧 FIX LAPOZÁSI SEBESSÉG
+    point.duration = 3000;
 
-			if (!point.to.length) point.to = [point.to];
-			if (!point.from.length) point.from = [point.from];
-			if (!point.easing) point.easing = function (x, t, b, c, data) { return c * Math.sqrt(1 - (t=t/data-1)*t) + b; };
+    if (!point.to.length) point.to = [point.to];
+    if (!point.from.length) point.from = [point.from];
+    if (!point.easing) point.easing = function (x, t, b, c, d) {
+      return c * Math.sqrt(1 - (t=t/d-1)*t) + b;
+    };
 
-			var j, diff = [],
-				len = point.to.length,
-				that = this,
-				fps = point.fps || 30,
-				point.duration = 3000; // vagy 5000 ms, ha még lassabb kell
-				time = - fps,
-				f = function() {
-					var j, v = [];
-					time = Math.min(point.duration, time + fps);
-	
-					for (j = 0; j < len; j++)
-						v.push(point.easing(1, time, point.from[j], diff[j], point.duration));
-
-					point.frame((len==1) ? v[0] : v);
-
-					if (time==point.duration) {
-						clearInterval(data.effect.handle);
-						delete data['effect'];
-						that.data(data);
-						if (point.complete)
-							point.complete();
-						}
-					};
 
 			for (j = 0; j < len; j++)
 				diff.push(point.to[j] - point.from[j]);
