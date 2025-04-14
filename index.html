@@ -532,20 +532,12 @@
   const containerWidth = window.innerWidth;
   const containerHeight = window.innerHeight;
 
-  // Arány kiszámítása a borító mérete alapján
-  const targetRatio = 2800 / 1979; // vagyis magasság / szélesség
+  const width = Math.min(containerWidth * 0.9, 1979);
+  const height = Math.min(containerHeight * 0.9, 2800);
 
-  // A kívánt szélesség maximum 90% a képernyőből vagy 800px
-  const width = Math.min(containerWidth * 0.9, 800);
-
-  // A magasság legyen ennek az arányos megfelelője
-  const height = width * targetRatio;
-
-  // Turn.js könyv méretének beállítása
   $("#book").turn("size", width, height);
   $("#book").turn("center");
 }
-
 
 
 // Egérkattintás figyelése a könyv területén
