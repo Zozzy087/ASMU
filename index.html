@@ -57,10 +57,12 @@
     
     /* Turn.js által használt könyv */
     #book {
-      width: 800px;
-      height: 600px;
-      margin: 0 auto;
-    }
+  width: 1979px;
+  height: 2800px;
+  max-width: 100%;
+  max-height: 100%;
+}
+
     
     /* Oldal stílusok */
     .page-content {
@@ -469,13 +471,14 @@
       loadMixedPages(pages).then(() => {
         // Turn.js inicializálása
         $("#book").turn({
-          width: 800,
-          height: 600,
+          width: 1979,
+          height: 2800,
           autoCenter: true,
           display: 'single',    // Egyszerre egy oldal legyen látható
           acceleration: true,   // Hardveres gyorsítás
           elevation: 50,        // Lapozási hatás kiemelése
           gradients: true,      // Árnyékok engedélyezése
+		  corners: 'all',
           when: {
             turning: function(event, page, pageObj) {
               if (!isMuted) {
@@ -506,33 +509,16 @@
       
       // Könyv méretének frissítése a képernyőhöz
       function updateBookSize() {
-  const windowWidth = window.innerWidth;
-  const windowHeight = window.innerHeight;
+  const containerWidth = window.innerWidth;
+  const containerHeight = window.innerHeight;
 
-  // Alap méretarány megtartása (pl. A4)
-  const aspectRatio = 4 / 3; // vagy: 3/4 ha fordított kell
+  const width = Math.min(containerWidth * 0.9, 1979);
+  const height = Math.min(containerHeight * 0.9, 2800);
 
-  // Maximális magasság kihasználása
-  const maxHeight = windowHeight * 0.95;
-  let newHeight = maxHeight;
-  let newWidth = newHeight * aspectRatio;
-
-  // Ha túlnyúlik a szélességen, akkor újraszámolás
-  if (newWidth > windowWidth * 0.95) {
-    newWidth = windowWidth * 0.95;
-    newHeight = newWidth / aspectRatio;
-  }
-
-  // Méretezés alkalmazása
-  $("#book").turn("size", newWidth, newHeight);
-  $("#book").css({
-    width: newWidth + "px",
-    height: newHeight + "px"
-  });
-
-  // Középre igazítás
+  $("#book").turn("size", width, height);
   $("#book").turn("center");
 }
+
 
 // Egérkattintás figyelése a könyv területén
 $("#book").on("click", function (e) {
