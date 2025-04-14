@@ -26,7 +26,7 @@
   <!-- jQuery betöltése - Turn.js szükséges hozzá -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   
-  <!-- Turn.js betöltése -->
+  <!-- Turn.js CSS és JS -->
   <script src="js/turn.min.js"></script>
   
   <style>
@@ -91,7 +91,6 @@
       font-size: 24px;
       border-bottom: 2px solid #963;
       padding-bottom: 10px;
-      font-family: 'Cinzel', serif;
     }
     
     .page-text {
@@ -442,41 +441,9 @@
       });
     }
     
-    // Ha van korábbi oldalak JavaScript fájl, használjuk azt
-    let pagesData = null;
-    
-    try {
-      // Ha már van oldalak definiálva egy külön JS fájlban
-      // Ez a script blokk csak akkor fog futni, ha létezik a pages.js fájl
-      $.getScript('js/pages.js')
-        .done(function() {
-          console.log('Oldalak betöltve a pages.js fájlból');
-          if (typeof pages !== 'undefined') {
-            pagesData = pages;
-            initTurnJS();
-          }
-        })
-        .fail(function() {
-          console.log('Nem található pages.js, alapértelmezett oldalak használata');
-          // Alapértelmezett oldalak definiálása
-          pagesData = [
-            { type: 'image', path: 'images/oldalak/borito.webp' },
-            { type: 'html', path: 'pages/oldal-1.html' },
-            { type: 'html', path: 'pages/oldal-2.html' },
-            { type: 'html', path: 'pages/oldal-3.html' },
-            { type: 'html', path: 'pages/oldal-4.html' },
-            { type: 'html', path: 'pages/oldal-5.html' },
-            { type: 'html', path: 'pages/oldal-6.html' },
-            { type: 'html', path: 'pages/oldal-7.html' },
-            { type: 'html', path: 'pages/oldal-8.html' },
-            { type: 'html', path: 'pages/oldal-9.html' }
-          ];
-          initTurnJS();
-        });
-    } catch (e) {
-      console.error('Hiba az oldalak betöltése közben:', e);
-      // Alapértelmezett oldalak definiálása hiba esetén
-      pagesData = [
+    // Oldal betöltése után
+    $(document).ready(function() {
+      const pages = [
         { type: 'image', path: 'images/oldalak/borito.webp' },
         { type: 'html', path: 'pages/oldal-1.html' },
         { type: 'html', path: 'pages/oldal-2.html' },
@@ -488,11 +455,7 @@
         { type: 'html', path: 'pages/oldal-8.html' },
         { type: 'html', path: 'pages/oldal-9.html' }
       ];
-      initTurnJS();
-    }
-    
-    // Turn.js inicializálása
-    function initTurnJS() {
+      
       const flipSound = document.getElementById("flipSound");
       const fullscreenBtn = document.getElementById("fullscreen-button");
       const pageIndicator = document.getElementById("page-indicator");
@@ -503,7 +466,7 @@
       const loadingText = document.getElementById('loading-text');
       
       // Oldalak betöltése a könyvbe
-      loadMixedPages(pagesData).then(() => {
+      loadMixedPages(pages).then(() => {
         // Turn.js inicializálása
         $("#book").turn({
           width: 800,
@@ -519,18 +482,18 @@
                 flipSound.currentTime = 0;
                 flipSound.play().catch(e => console.log("Hang hiba:", e));
               }
-              pageIndicator.textContent = `Oldal ${page} / ${pagesData.length}`;
+              pageIndicator.textContent = `Oldal ${page} / ${pages.length}`;
               fullscreenBtn.style.display = page === 1 ? "block" : "none";
             },
             turned: function(event, page, pageObj) {
-              setTimeout(handlePageLinks, 100);
+              handlePageLinks();
             }
           }
         });
         
         // Könyv betöltve
         document.getElementById('loading').style.display = 'none';
-        pageIndicator.textContent = `Oldal 1 / ${pagesData.length}`;
+        pageIndicator.textContent = `Oldal 1 / ${pages.length}`;
         handlePageLinks();
         
         // Responsivity frissítése ablakméret változásakor
@@ -546,7 +509,7 @@
         let width = $(window).width();
         let height = $(window).height();
         
-        // Portré vagy tájkép mód, de mindig egy oldal látszik
+        // Portré vagy tájkép mód
         if (width < height) {
           // Portré mód
           $("#book").turn("display", "single");
@@ -589,30 +552,7 @@
           $("#book").turn("next");
         }
       });
-      
-      // Touch események
-      let touchStartX = 0;
-      let touchStartTime = 0;
-
-      $(document).on('touchstart', function(e) {
-        touchStartX = e.originalEvent.touches[0].clientX;
-        touchStartTime = Date.now();
-      });
-
-      $(document).on('touchend', function(e) {
-        const touchEndX = e.originalEvent.changedTouches[0].clientX;
-        const deltaX = touchEndX - touchStartX;
-        const deltaTime = Date.now() - touchStartTime;
-
-        if (Math.abs(deltaX) > 30 && deltaTime < 300) {
-          if (deltaX > 0) {
-            $("#book").turn("previous");
-          } else {
-            $("#book").turn("next");
-          }
-        }
-      });
-    }
+    });
     
     // HTML oldalak és képek betöltése
     async function loadMixedPages(pages) {
