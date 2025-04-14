@@ -59,10 +59,17 @@
   
   <audio id="flipSound" src="sounds/pageturn-102978.mp3"></audio>
 
-  <!-- Dobókocka widgetek -->
-  <button id="dice-toggle" class="mute-toggle" style="right:20px;left:auto;bottom:20px;">🎲🎲🎲</button>
-  <div id="dice-widget-container" style="display:none;position:fixed;bottom:80px;right:20px;background:rgba(0,0,0,0.8);padding:10px;border-radius:10px;"></div>
-
+  <!-- Kockadobás widgetek -->
+  <button class="dice-toggle" onclick="toggleDiceWidget()" title="3 Kockás dobás" style="padding: 4px 6px;">
+    <span style="font-size: 15px;">🎲🎲🎲</span>
+  </button>
+  <div id="dice-widget-container"></div>
+  
+  <button class="single-dice-toggle" onclick="toggleSingleDiceWidget()" title="1 Kockás dobás" style="padding: 4px 6px;">
+    <span style="font-size: 15px;">🎲</span>
+  </button>
+  <div id="single-dice-widget-container"></div>
+  
 <script>
 // MINDEN FUNKCIÓ EGY HELYEN, JÓL SZERVEZVE
 document.addEventListener('DOMContentLoaded', () => {
@@ -114,14 +121,142 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('mute-button').textContent = flipSound.muted ? '🔇' : '🔊';
   };
 
-  // DICE WIDGET (példa: 1 kocka)
-  document.getElementById('dice-toggle').onclick = () => {
-    let c = document.getElementById('dice-widget-container');
-    c.style.display = c.style.display === 'none' ? 'block' : 'none';
-    c.innerHTML = `
-      <button onclick="this.nextElementSibling.textContent='Dobás: '+(1+Math.floor(Math.random()*6));" style="padding:8px;">Dobj 1 kockával</button>
-      <div style="color:white;margin-top:5px;"></div>`;
-  };
+  // 3 kockás widget funkciók
+    function toggleDiceWidget() {
+      const container = document.getElementById('dice-widget-container');
+      if (container.style.display === 'none' || container.style.display === '') {
+        // Másik widget elrejtése, ha látszik
+        document.getElementById('single-dice-widget-container').style.display = 'none';
+        
+        container.style.display = 'block';
+        showDiceRoll();
+      } else {
+        container.style.display = 'none';
+      }
+    }
+
+    function showDiceRoll() {
+      const container = document.getElementById("dice-widget-container");
+      if (!container) return;
+
+      container.innerHTML = `
+          <div style="text-align:center; margin-top:20px;">
+              <h3 class="dice-title">
+                  Harci Kockadobás
+              </h3>
+              <br>
+              <button onclick="rollDice()" class="dice-button">
+                  Dobás
+              </button>
+              <div class="dice-results" id="dice-images"></div>
+              <div id="success-results"></div>
+          </div>
+      `;
+    }
+
+    function rollDice() {
+      const diceImages = {
+          1: 'images/d1.png',
+          2: 'images/d2.png',
+          3: 'images/d3.png',
+          4: 'images/d4.png',
+          5: 'images/d5.png',
+          6: 'images/d6.png'
+      };
+
+      const diceContainer = document.getElementById('dice-images');
+      const successResults = document.getElementById('success-results');
+      diceContainer.innerHTML = '';
+
+      let successes = 0;
+
+      for (let i = 0; i < 3; i++) {
+          const roll = Math.floor(Math.random() * 6) + 1;
+          const img = document.createElement('img');
+          img.src = diceImages[roll];
+          img.alt = `Kocka: ${roll}`;
+          img.style.width = '80px';
+          img.style.height = '80px';
+          diceContainer.appendChild(img);
+
+          if (roll >= 4) {
+              successes++;
+          }
+      }
+
+      let successText = '';
+      switch (successes) {
+          case 0:
+              successText = 'Nincs Siker';
+              break;
+          case 1:
+              successText = 'Egy Siker';
+              break;
+          case 2:
+              successText = 'Két Siker';
+              break;
+          case 3:
+              successText = 'Három Siker';
+              break;
+      }
+
+      successResults.textContent = successText;
+    }
+    
+    // 1 kockás widget funkciók
+    function toggleSingleDiceWidget() {
+      const container = document.getElementById('single-dice-widget-container');
+      if (container.style.display === 'none' || container.style.display === '') {
+        // Másik widget elrejtése, ha látszik
+        document.getElementById('dice-widget-container').style.display = 'none';
+        
+        container.style.display = 'block';
+        showSingleDiceRoll();
+      } else {
+        container.style.display = 'none';
+      }
+    }
+    
+    function showSingleDiceRoll() {
+      const container = document.getElementById("single-dice-widget-container");
+      if (!container) return;
+
+      container.innerHTML = `
+          <div style="text-align:center; margin-top:20px;">
+              <h3 class="dice-title">
+                  1D6 Kockadobás
+              </h3>
+              <br>
+              <button onclick="rollSingleDice()" class="dice-button">
+                  Dobás
+              </button>
+              <div class="dice-results" id="single-dice-image"></div>
+          </div>
+      `;
+    }
+    
+    function rollSingleDice() {
+      const diceImages = {
+          1: 'images/d1.png',
+          2: 'images/d2.png',
+          3: 'images/d3.png',
+          4: 'images/d4.png',
+          5: 'images/d5.png',
+          6: 'images/d6.png'
+      };
+      
+      const diceContainer = document.getElementById('single-dice-image');
+      diceContainer.innerHTML = ''; // Előző kép törlése
+      
+      // 1D6 dobás
+      const roll = Math.floor(Math.random() * 6) + 1;
+      const img = document.createElement('img');
+      img.src = diceImages[roll];
+      img.alt = `Kocka: ${roll}`;
+      img.style.width = '80px';
+      img.style.height = '80px';
+      diceContainer.appendChild(img);
+    }
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./service-worker.js')
