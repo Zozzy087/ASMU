@@ -576,30 +576,30 @@
         clickEventForward: true
       });
       
-      // Oldalak definíciója - konzisztensebb kezelés a borítóra és utolsó oldalra
-      const pages = [
-        // Borító (keményborító)
-        { 
-          type: 'image',
-          path: 'images/oldalak/borito.webp',
-          isHard: true
-        },
-        // HTML oldalak
-        { type: 'html', path: 'pages/oldal-1.html' },
-        { type: 'html', path: 'pages/oldal-2.html' },
-        { type: 'html', path: 'pages/oldal-3.html' },
-        { type: 'html', path: 'pages/oldal-4.html' },
-        { type: 'html', path: 'pages/oldal-5.html' },
-        { type: 'html', path: 'pages/oldal-6.html' },
-        { type: 'html', path: 'pages/oldal-7.html' },
-        { type: 'html', path: 'pages/oldal-8.html' },
-        // Utolsó oldal (szintén keményborító)
-        { 
-          type: 'html', 
-          path: 'pages/oldal-9.html',
-          isHard: true
-        }
-      ];
+      // Oldalak definíciója - minden oldal puha a jobb lapozási élményért
+const pages = [
+  // Borító (puha)
+  { 
+    type: 'image',
+    path: 'images/oldalak/borito.webp',
+    isHard: false
+  },
+  // HTML oldalak
+  { type: 'html', path: 'pages/oldal-1.html' },
+  { type: 'html', path: 'pages/oldal-2.html' },
+  { type: 'html', path: 'pages/oldal-3.html' },
+  { type: 'html', path: 'pages/oldal-4.html' },
+  { type: 'html', path: 'pages/oldal-5.html' },
+  { type: 'html', path: 'pages/oldal-6.html' },
+  { type: 'html', path: 'pages/oldal-7.html' },
+  { type: 'html', path: 'pages/oldal-8.html' },
+  // Utolsó oldal (puha)
+  { 
+    type: 'html', 
+    path: 'pages/oldal-9.html',
+    isHard: false
+  }
+];
       
       // Kezdeti frissítés, hogy biztosan jó mérettel induljon
       setTimeout(() => pageFlip.update(), 100);
@@ -719,24 +719,15 @@
           const pageElement = document.createElement('div');
           pageElement.className = 'page';
           
-          // Keményborító kezelése speciálisan
-          if (page.isHard) {
-            pageElement.setAttribute('data-density', 'hard');
-            
-            // További optimalizálás a keményborítóhoz
-            const hardWrapperDiv = document.createElement('div');
-            hardWrapperDiv.className = 'hard-cover';
-            pageElement.appendChild(hardWrapperDiv);
-            
-            if (page.type === 'image') {
-              // Kép oldal (borító) beállítása
-              const img = document.createElement('img');
-              img.src = page.path;
-              img.className = 'cover-image';
-              img.alt = 'Borítókép';
-              hardWrapperDiv.appendChild(img);
-            }
-          }
+          // Minden oldal puha, egyszerűbb kezelés
+if (page.type === 'image') {
+  // Kép oldal (borító) beállítása egyszerűen
+  const img = document.createElement('img');
+  img.src = page.path;
+  img.className = 'cover-image';
+  img.alt = 'Borítókép';
+  pageElement.appendChild(img);
+}
           
           if (page.type === 'image' && !page.isHard) {
             // Egyszerű kép oldal
@@ -755,17 +746,9 @@
               
               const html = await response.text();
               
-              // Ha ez egy keményborítós oldal, akkor a hard-cover divbe tesszük a tartalmat
-              if (page.isHard) {
-                const hardWrapperDiv = pageElement.querySelector('.hard-cover');
-                if (hardWrapperDiv) {
-                  hardWrapperDiv.innerHTML = html;
-                } else {
-                  pageElement.innerHTML = html;
-                }
-              } else {
-                pageElement.innerHTML = html;
-              }
+              // Minden oldal puha, egyszerű HTML beillesztés
+pageElement.innerHTML = html;
+
             } catch (error) {
               console.error(`Hiba a HTML oldal betöltése közben: ${page.path}`, error);
               pageElement.innerHTML = `
@@ -790,10 +773,7 @@
         }
       }
       
-      // Az utolsó oldalt is keményborítóvá tesszük a konzisztens animáció érdekében
-     if (pageElements.length > 0 && !pageElements[pageElements.length-1].hasAttribute('data-density')) {
-       pageElements[pageElements.length-1].setAttribute('data-density', 'hard');
-     }
+     
      
      // Oldalak betöltése a könyvbe
      pageFlip.loadFromHTML(pageElements);
