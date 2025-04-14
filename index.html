@@ -549,47 +549,47 @@
 
   <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const loadingText = document.getElementById("loading-text");
+    const loadingText = document.getElementById('loading-text');
 
     const pageFlip = new St.PageFlip(document.getElementById("book"), {
       size: "stretch",
-      width: 640,
-      height: 900,
       minWidth: 300,
       maxWidth: 1000,
       minHeight: 400,
       maxHeight: 1400,
+      width: 640,
+      height: 900,
       maxShadowOpacity: 0.5,
       showCover: true,
-      mobileScrollSupport: false,
+      mobileScrollSupport: true,
       flippingTime: 1000,
       usePortrait: true,
       drawShadow: true,
       startZIndex: 5,
       autoSize: true,
-      clickEventForward: true,
+      clickEventForward: true
     });
 
     const pages = [
-      { type: "image", path: "images/oldalak/borito.webp" },
-      { type: "html", path: "pages/oldal-1.html" },
-      { type: "html", path: "pages/oldal-2.html" },
-      { type: "html", path: "pages/oldal-3.html" },
-      { type: "html", path: "pages/oldal-4.html" },
-      { type: "html", path: "pages/oldal-5.html" },
-      { type: "html", path: "pages/oldal-6.html" },
-      { type: "html", path: "pages/oldal-7.html" },
-      { type: "html", path: "pages/oldal-8.html" },
-      { type: "html", path: "pages/oldal-9.html" },
+      { type: 'image', path: 'images/oldalak/borito.webp' },
+      { type: 'html', path: 'pages/oldal-1.html' },
+      { type: 'html', path: 'pages/oldal-2.html' },
+      { type: 'html', path: 'pages/oldal-3.html' },
+      { type: 'html', path: 'pages/oldal-4.html' },
+      { type: 'html', path: 'pages/oldal-5.html' },
+      { type: 'html', path: 'pages/oldal-6.html' },
+      { type: 'html', path: 'pages/oldal-7.html' },
+      { type: 'html', path: 'pages/oldal-8.html' },
+      { type: 'html', path: 'pages/oldal-9.html' }
     ];
 
     setTimeout(() => pageFlip.update(), 100);
 
-    loadMixedPages(pages, pageFlip)
-      .then(() => console.log("Könyv sikeresen betöltve"))
-      .catch((error) =>
-        console.error("Hiba a könyv betöltésekor:", error)
-      );
+    loadMixedPages(pages, pageFlip).then(() => {
+      console.log("Könyv sikeresen betöltve");
+    }).catch(error => {
+      console.error("Hiba a könyv betöltésekor:", error);
+    });
 
     const flipSound = document.getElementById("flipSound");
     const fullscreenBtn = document.getElementById("fullscreen-button");
@@ -611,33 +611,36 @@
     });
 
     document.addEventListener("fullscreenchange", () => {
-      fullscreenBtn.style.display = document.fullscreenElement
-        ? "none"
-        : "block";
+      fullscreenBtn.style.display = document.fullscreenElement ? "none" : "block";
     });
 
-    pageFlip.on("init", () => {
-      document.getElementById("loading").style.display = "none";
+    pageFlip.on('init', () => {
+      document.getElementById('loading').style.display = 'none';
       pageIndicator.textContent = `Oldal 1 / ${pageFlip.getPageCount()}`;
       handlePageLinks(pageFlip);
     });
 
-    pageFlip.on("flip", (e) => {
+    pageFlip.on('flip', (e) => {
       if (!isMuted) {
         flipSound.currentTime = 0;
-        flipSound.play().catch(() => {});
+        flipSound.play().catch(e => console.log("Hang hiba:", e));
       }
       pageIndicator.textContent = `Oldal ${e.data + 1} / ${pageFlip.getPageCount()}`;
       fullscreenBtn.style.display = e.data === 0 ? "block" : "none";
       setTimeout(() => handlePageLinks(pageFlip), 100);
     });
 
-    pageFlip.on("changeOrientation", () => pageFlip.update());
-    window.addEventListener("resize", () => pageFlip.update());
+    pageFlip.on('changeOrientation', () => {
+      pageFlip.update();
+    });
 
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowRight") pageFlip.flipNext();
-      else if (e.key === "ArrowLeft") pageFlip.flipPrev();
+    window.addEventListener('resize', () => {
+      pageFlip.update();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') pageFlip.flipNext();
+      else if (e.key === 'ArrowLeft') pageFlip.flipPrev();
     });
   });
 
@@ -645,33 +648,33 @@
     const pageElements = [];
     const totalPages = pages.length;
     let loadedCount = 0;
-    const loadingText = document.getElementById("loading-text");
+    const loadingText = document.getElementById('loading-text');
 
     for (const page of pages) {
       try {
         loadingText.textContent = `Betöltés: ${loadedCount + 1}/${totalPages}`;
-        const pageElement = document.createElement("div");
-        pageElement.className = "page";
+        const pageElement = document.createElement('div');
+        pageElement.className = 'page';
 
-        if (page.type === "image") {
-          const img = document.createElement("img");
+        if (page.type === 'image') {
+          const img = document.createElement('img');
           img.src = page.path;
-          img.className = "cover-image";
-          img.alt = "Oldalkép";
+          img.className = 'cover-image';
+          img.alt = 'Oldalkép';
           pageElement.appendChild(img);
-        } else if (page.type === "html") {
+        } else if (page.type === 'html') {
           try {
             const response = await fetch(page.path);
-            if (!response.ok) throw new Error(`HTTP hiba! Státusz: ${response.status}`);
+            if (!response.ok) throw new Error(`HTTP hiba: ${response.status}`);
             const html = await response.text();
             pageElement.innerHTML = html;
           } catch (error) {
-            console.error(`Hiba a HTML oldal betöltésekor: ${page.path}`, error);
+            console.error(`Hiba a HTML oldal betöltésénél: ${page.path}`, error);
             pageElement.innerHTML = `
               <div class="page-content">
                 <h2 class="page-title">Betöltési hiba</h2>
                 <div class="page-text">
-                  <p>Nem tölthető be: ${page.path}</p>
+                  <p>Az oldal nem tölthető be: ${page.path}</p>
                   <p>Hiba: ${error.message}</p>
                 </div>
               </div>`;
@@ -680,16 +683,29 @@
 
         pageElements.push(pageElement);
         loadedCount++;
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 100));
       } catch (error) {
-        console.error("Hiba az oldal betöltésekor:", error);
+        console.error('Általános hiba oldal betöltésekor:', error);
       }
     }
 
     pageFlip.loadFromHTML(pageElements);
     return pageFlip;
   }
+
+  function handlePageLinks(pageFlip) {
+    document.querySelectorAll('[data-page]').forEach(link => {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetPage = parseInt(this.getAttribute('data-page'));
+        if (!isNaN(targetPage)) {
+          pageFlip.flip(targetPage - 1);
+        }
+      });
+    });
+  }
 </script>
+
 
 </body>
 </html>
