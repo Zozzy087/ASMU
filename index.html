@@ -578,13 +578,8 @@
       
       // Oldalak definíciója - konzisztensebb kezelés a borítóra és utolsó oldalra
       const pages = [
-        // Borító (keményborító)
-        { 
-          type: 'image',
-          path: 'images/oldalak/borito.webp',
-          isHard: false
-        },
-        // HTML oldalak
+        // Borító + HTML oldalak
+        { type: 'image', path: 'images/oldalak/borito.webp'},
         { type: 'html', path: 'pages/oldal-1.html' },
         { type: 'html', path: 'pages/oldal-2.html' },
         { type: 'html', path: 'pages/oldal-3.html' },
@@ -593,12 +588,7 @@
         { type: 'html', path: 'pages/oldal-6.html' },
         { type: 'html', path: 'pages/oldal-7.html' },
         { type: 'html', path: 'pages/oldal-8.html' },
-        // Utolsó oldal (szintén keményborító)
-        { 
-          type: 'html', 
-          path: 'pages/oldal-9.html',
-          isHard: false
-        }
+        { type: 'html', path: 'pages/oldal-9.html' },
       ];
       
       // Kezdeti frissítés, hogy biztosan jó mérettel induljon
