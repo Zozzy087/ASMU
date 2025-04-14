@@ -45,50 +45,6 @@
       height: 100%;
     }
     
-    /* StPageFlip stílusok finomítása */
-    .stf__parent {
-      position: relative;
-      display: block;
-      box-sizing: border-box;
-      transform: translateZ(0);
-      -ms-touch-action: pan-y;
-      touch-action: pan-y;
-    }
-
-    .sft__wrapper {
-      position: relative;
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    .stf__parent canvas {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      left: 0;
-      top: 0;
-    }
-
-    .stf__block {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      box-sizing: border-box;
-      perspective: 2000px;
-    }
-
-    .stf__item {
-      display: none;
-      position: absolute;
-      transform-style: preserve-3d;
-    }
-
-    .stf__outerShadow, .stf__innerShadow, .stf__hardShadow, .stf__hardInnerShadow {
-      position: absolute;
-      left: 0;
-      top: 0;
-    }
-    
     /* Oldal tartalom stílusok */
     .page-content {
       width: 100%;
@@ -101,10 +57,8 @@
       position: relative;
       display: flex;
       flex-direction: column;
-      /* Meghatározott oldalméret megőrzése a méretezéskor */
-      max-width: 1979px;
+      max-width: 100%;
       margin: 0 auto;
-      /* Görgetősáv elrejtése, de görgethető marad ha kell */
       -ms-overflow-style: none;  /* IE and Edge */
       scrollbar-width: none;  /* Firefox */
     }
@@ -132,14 +86,6 @@
       padding-bottom: 15px;
     }
     
-    .page-dark .page-title {
-      border-bottom-color: #f9f7e8;
-    }
-    
-    .page-battle .page-title {
-      border-bottom-color: #f9f7e8;
-    }
-    
     .page-text {
       font-size: clamp(16px, 3vw, 18px);
       line-height: 1.6;
@@ -152,14 +98,6 @@
       margin-top: auto;
       border-top: 1px dashed #963;
       padding-top: 20px;
-    }
-    
-    .page-dark .choices {
-      border-top: 1px dashed #f9f7e8;
-    }
-    
-    .page-battle .choices {
-      border-top: 1px dashed #f9f7e8;
     }
     
     .choices a {
@@ -190,11 +128,6 @@
       box-shadow: 0 5px 10px rgba(0,0,0,0.1);
     }
     
-    .page-dark .choices a:hover,
-    .page-battle .choices a:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-    
     .page-number {
       text-align: center;
       margin-top: 20px;
@@ -209,6 +142,38 @@
       position: absolute;
       top: 0;
       left: 0;
+    }
+    
+    /* Betöltési indikátor */
+    #loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      color: white;
+      font-size: 24px;
+    }
+    
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #7f00ff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
     
     /* Minden egyéb vezérlő és widget */
@@ -319,37 +284,6 @@
       pointer-events: none;
     }
     
-    #loading {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      color: white;
-      font-size: 24px;
-    }
-    
-    .spinner {
-      width: 60px;
-      height: 60px;
-      border: 6px solid #f3f3f3;
-      border-top: 6px solid #7f00ff;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 20px;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
     /* Kockadobás widgetek belső stílusai */
     .dice-title {
       font-family: 'Cinzel', serif;
@@ -405,26 +339,6 @@
       .choices a {
         padding: 8px;
         font-size: 0.9em;
-      }
-    }
-    
-    /* Specifikus reszponzív méretezés */
-    @media screen and (max-height: 600px) {
-      .page-content {
-        padding: 15px;
-      }
-      
-      .page-title {
-        margin-bottom: 15px;
-        padding-bottom: 10px;
-      }
-      
-      .page-text {
-        margin-bottom: 15px;
-      }
-      
-      .choices {
-        padding-top: 10px;
       }
     }
   </style>
@@ -607,7 +521,7 @@
     }
   </script>
 
-  <!-- Eredeti StPageFlip könyvtár betöltése -->
+  <!-- StPageFlip könyvtár betöltése -->
   <link rel="stylesheet" href="css/page-flip.min.css" />
   <script src="js/page-flip.browser.js"></script>
 
@@ -616,43 +530,43 @@
       // Betöltési indikátor
       const loadingText = document.getElementById('loading-text');
       
-      // Képarány számítása és alkalmazása
-      const aspectRatio = 2800 / 1979; // eredeti 1979x2800 px
-      const viewportWidth = Math.min(document.documentElement.clientWidth, 1979);
-      const calculatedHeight = viewportWidth * aspectRatio;
-      
       // PageFlip inicializálása
       const pageFlip = new St.PageFlip(document.getElementById("book"), {
-        width: 1979,            // eredeti szélesség
-        height: 2800,           // eredeti magasság
-        size: "stretch",        // dinamikus méretezés a képernyőhöz
-        minWidth: 320,          // minimum szélesség pixelben
-        maxWidth: 1979,         // maximum szélesség - az eredeti
-        minHeight: 400,         // minimum magasság pixelben
-        maxHeight: 2800,        // maximum magasság - az eredeti
-        maxShadowOpacity: 0.5,  // árnyék átlátszatlansága
-        showCover: true,        // borító külön kezelése
-        mobileScrollSupport: false, // mobilos görgetés kikapcsolása
-        flippingTime: 1000,     // lapozási animáció időtartama (ms)
-        usePortrait: true,      // portré mód engedélyezése kis képernyőn
-        startZIndex: 0,         // kezdő z-index
-        autoSize: true,         // automatikus méretezés
-        drawShadow: true        // árnyék rajzolása
+        width: 1979,
+        height: 2800,
+        size: "stretch",
+        minWidth: 320,
+        maxWidth: 1979,
+        minHeight: 400,
+        maxHeight: 2800,
+        maxShadowOpacity: 0.5,
+        showCover: true,
+        mobileScrollSupport: false,
+        flippingTime: 1200,  // Lassabb, simább lapozás
+        usePortrait: true,
+        drawShadow: true
       });
       
-      
-      
-      // Képek betöltése a PageFlip-be
-      pageFlip.loadFromHtml(htmlPages);
-      
-      // HTML oldalakhoz való felkészülés - ez csak egy példa, hogyan lehet átállni
-      // Valós használatban ezeket a HTML oldalakat kellene létrehozni
-      const htmlPages = [
-        { isConverted: false, path: "pages/borito.webp", idx: 0 },
-        { isConverted: false, path: "pages/oldal-1.html", idx: 1 },
-        { isConverted: false, path: "pages/oldal-2.html", idx: 2 }
-        // További oldalak ahogy elkészülnek...
+      // Oldalak definíciója - először a borító, majd HTML oldalak
+      const pages = [
+        { type: 'image', path: 'images/oldalak/borito.webp', isHard: true },
+        { type: 'html', path: 'pages/oldal-1.html' },
+        { type: 'html', path: 'pages/oldal-2.html' },
+        { type: 'html', path: 'pages/oldal-3.html' },
+        { type: 'html', path: 'pages/oldal-4.html' },
+        { type: 'html', path: 'pages/oldal-5.html' },
+        { type: 'html', path: 'pages/oldal-6.html' },
+        { type: 'html', path: 'pages/oldal-7.html' },
+        { type: 'html', path: 'pages/oldal-8.html' },
+        { type: 'html', path: 'pages/oldal-9.html' }
       ];
+      
+      // Oldalak betöltése és a könyv inicializálása
+      loadMixedPages(pages, pageFlip).then(() => {
+        console.log("Könyv sikeresen betöltve");
+      }).catch(error => {
+        console.error("Hiba a könyv betöltésekor:", error);
+      });
       
       // Események és vezérlők beállítása
       const flipSound = document.getElementById("flipSound");
@@ -686,18 +600,17 @@
           fullscreenBtn.style.display = "none";
         }
       });
-
-      // Oldalszám frissítése induláskor
-      pageIndicator.textContent = `Oldal 1 / ${pageFlip.getPageCount()}`;
       
       // PageFlip események
       pageFlip.on('init', (e) => {
         // Betöltési indikátor elrejtése
         document.getElementById('loading').style.display = 'none';
         
-        // Könyv kezdeti állapota
+        // Oldalszám frissítése induláskor
         pageIndicator.textContent = `Oldal 1 / ${pageFlip.getPageCount()}`;
-        fullscreenBtn.style.display = "block";
+        
+        // Oldalon belüli linkek kezelése
+        handlePageLinks(pageFlip);
       });
 
       // Lapozás esemény kezelése
@@ -714,11 +627,8 @@
         // Teljes képernyős gomb csak az első oldalon
         fullscreenBtn.style.display = e.data === 0 ? "block" : "none";
         
-        // Ha az oldalt már konvertáltuk HTML-re, frissítsük a linkeket
-        const convertedPage = htmlPages.find(p => p.idx === e.data && p.isConverted);
-        if (convertedPage) {
-          setTimeout(() => handlePageLinks(pageFlip), 100);
-        }
+        // Oldalon belüli linkek kezelése
+        setTimeout(() => handlePageLinks(pageFlip), 100);
       });
       
       // Ablakméret változásának kezelése
@@ -726,24 +636,73 @@
         // Könyv méretének frissítése, ha szükséges
         pageFlip.update();
       });
-      
-      // Demo: HTML oldal betöltése (csak illusztráció)
-      function loadHTMLPage(pageIdx, htmlPath) {
-        fetch(htmlPath)
-          .then(response => response.text())
-          .then(html => {
-            // Itt lecserélhetnéd a kép oldalt HTML oldalra
-            // Ez csak példa, a tényleges implementáció összetettebb lenne
-            const convertedPage = htmlPages.find(p => p.idx === pageIdx);
-            if (convertedPage) {
-              convertedPage.isConverted = true;
-            }
-          })
-          .catch(error => {
-            console.error(`Hiba a HTML oldal betöltésekor: ${htmlPath}`, error);
-          });
-      }
     });
+    
+    // HTML oldalak és borító betöltése
+    async function loadMixedPages(pages, pageFlip) {
+      const pageElements = [];
+      const totalPages = pages.length;
+      let loadedCount = 0;
+      
+      // Betöltési folyamat indikátor
+      const loadingText = document.getElementById('loading-text');
+      
+      for (const page of pages) {
+        try {
+          loadingText.textContent = `Betöltés: ${loadedCount + 1}/${totalPages}`;
+          
+          const pageElement = document.createElement('div');
+          pageElement.className = 'page';
+          
+          if (page.isHard) {
+            pageElement.setAttribute('data-density', 'hard');
+          }
+          
+          if (page.type === 'image') {
+            // Kép oldal (borító)
+            const img = document.createElement('img');
+            img.src = page.path;
+            img.className = 'cover-image';
+            img.alt = 'Borítókép';
+            pageElement.appendChild(img);
+          } else if (page.type === 'html') {
+            // HTML oldal betöltése
+            try {
+              const response = await fetch(page.path);
+              if (!response.ok) {
+                throw new Error(`HTTP hiba! Státusz: ${response.status}`);
+              }
+              
+              const html = await response.text();
+              pageElement.innerHTML = html;
+            } catch (error) {
+              console.error(`Hiba a HTML oldal betöltése közben: ${page.path}`, error);
+              pageElement.innerHTML = `
+                <div class="page-content">
+                  <h2 class="page-title">Betöltési hiba</h2>
+                  <div class="page-text">
+                    <p>Az oldal nem tölthető be: ${page.path}</p>
+                    <p>Hiba: ${error.message}</p>
+                  </div>
+                </div>
+              `;
+            }
+          }
+          
+          pageElements.push(pageElement);
+          loadedCount++;
+          
+          // Egy kis késleltetés a betöltési animáció láthatóságáért
+          await new Promise(resolve => setTimeout(resolve, 100));
+        } catch (error) {
+          console.error('Hiba az oldal betöltésekor:', error);
+        }
+      }
+      
+      // Oldalak betöltése a könyvbe
+      pageFlip.loadFromHTML(pageElements);
+      return pageFlip;
+    }
   </script>
 </body>
 </html>
