@@ -301,6 +301,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updatePageIndicator();
 
+  // GOMBOK ESEMÉNYKEZELŐI:
+  document.getElementById('next-btn').onclick = nextPage;
+  document.getElementById('prev-btn').onclick = prevPage;
+  document.getElementById('save-bookmark-btn').onclick = saveBookmark;
+  document.getElementById('load-bookmark-btn').onclick = loadBookmark;
+  document.getElementById('zoom-btn').onclick = toggleZoom;
+
   // 3 kockás widget funkciók
     function toggleDiceWidget() {
       const container = document.getElementById('dice-widget-container');
