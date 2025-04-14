@@ -379,9 +379,9 @@
 
 /* Adaptív borítókép */
 .cover-image {
-  object-fit: cover; /* 'cover' helyett 'contain' */
-  max-height: 1979;
-  max-width: 2800;
+  object-fit: contain; /* 'cover' helyett 'contain' */
+  max-height: 100%;
+  max-width: 100%;
 }
 
 /* Media query-k különböző eszközökhöz */
@@ -628,7 +628,7 @@
   minWidth: 300,
   maxWidth: 1000,
   minHeight: 400,
-  maxHeight: 1400,
+  maxHeight: 1000,
   // Arány megtartása
   width: 640,
   height: 900,
