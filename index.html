@@ -369,17 +369,35 @@
     }
 	
 	/* Force portrait mód minden képernyőn */
-.force-portrait .stf__block {
-  max-width: 800px;
-  margin: 0 auto;
-}
+    .force-portrait .stf__block {
+      max-width: 800px;
+      margin: 0 auto;
+    }
 
-/* Lap szélesség beállítása */
-.page {
-  max-width: 100%;
-  width: 100% !important;
-  height: 100% !important;
-}
+    /* Lap szélesség beállítása */
+    .page {
+      max-width: 100%;
+      width: 100% !important;
+      height: 100% !important;
+    }
+    
+    /* 4. Reszponzív design kiigazítások */
+    @media (orientation: landscape) {
+      #book {
+        max-width: 100vh;
+        max-height: 100vw;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .page-content {
+        padding: 10px !important;
+      }
+      
+      .choices a {
+        font-size: 14px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -554,6 +572,17 @@
         });
       });
     }
+    
+    // 5. Hibakezelés javítása
+    window.onerror = function(message, source, lineno, colno, error) {
+      console.error("JavaScript hiba:", message, "forrás:", source, "sor:", lineno);
+      return false;
+    };
+
+    // Ígéretek (Promises) hibakezelése
+    window.addEventListener('unhandledrejection', function(event) {
+      console.error("Kezeletlen Promise elutasítás:", event.reason);
+    });
   </script>
 
   <!-- StPageFlip könyvtár -->
@@ -563,78 +592,166 @@
   <script>
   document.addEventListener("DOMContentLoaded", function () {
     // A PageFlip inicializáló blokkban a következő változtatásokat végezd el
-const pageFlip = new St.PageFlip(document.getElementById("book"), {
-  size: "stretch",
-  minWidth: 300,
-  maxWidth: 1200,       // Növeltem a maximális szélességet
-  minHeight: 400,
-  maxHeight: 1400,
-  width: 800,           // Szélesebb alapméret
-  height: 900,
-  maxShadowOpacity: 0.5,
-  showCover: false,     // Így nincs különleges kezelés a borítónak
-  mobileScrollSupport: true,
-  flippingTime: 1000,
-  usePortrait: true,    // Fontos, ez biztosítja, hogy mindig csak egy oldal látszódjon!
-  forceSinglePage: true, // Új paraméter! Ez kényszeríti, hogy mindig csak egy oldal jelenjen meg
-  drawShadow: true,
-  startZIndex: 5,
-  autoSize: true,
-  clickEventForward: true
-});
+    const pageFlip = new St.PageFlip(document.getElementById("book"), {
+      size: "stretch",
+      minWidth: 300,
+      maxWidth: 1200,       // Növeltem a maximális szélességet
+      minHeight: 400,
+      maxHeight: 1400,
+      width: 800,           // Szélesebb alapméret
+      height: 900,
+      maxShadowOpacity: 0.5,
+      showCover: false,     // Így nincs különleges kezelés a borítónak
+      mobileScrollSupport: true,
+      flippingTime: 1000,
+      usePortrait: true,    // Fontos, ez biztosítja, hogy mindig csak egy oldal látszódjon!
+      forceSinglePage: true, // Új paraméter! Ez kényszeríti, hogy mindig csak egy oldal jelenjen meg
+      drawShadow: true,
+      startZIndex: 5,
+      autoSize: true,
+      clickEventForward: true
+    });
 
-// Helyezd ezt a script blokkba a DOM betöltés után
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(registration => {
-        console.log('Service Worker sikeresen regisztrálva:', registration.scope);
-        
-        // Frissítések kezelése
-        registration.onupdatefound = () => {
-          const installingWorker = registration.installing;
-          if (installingWorker == null) return;
-          
-          installingWorker.onstatechange = () => {
-            if (installingWorker.state === 'installed') {
-              if (navigator.serviceWorker.controller) {
-                console.log('Új tartalom érhető el, kérlek frissítsd az oldalt.');
-              } else {
-                console.log('Tartalom gyorsítótárazva offline használathoz.');
+    // Helyezd ezt a script blokkba a DOM betöltés után
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(registration => {
+            console.log('Service Worker sikeresen regisztrálva:', registration.scope);
+            
+            // Frissítések kezelése
+            registration.onupdatefound = () => {
+              const installingWorker = registration.installing;
+              if (installingWorker == null) return;
+              
+              installingWorker.onstatechange = () => {
+                if (installingWorker.state === 'installed') {
+                  if (navigator.serviceWorker.controller) {
+                    console.log('Új tartalom érhető el, kérlek frissítsd az oldalt.');
+                  } else {
+                    console.log('Tartalom gyorsítótárazva offline használathoz.');
+                  }
+                }
+              };
+            };
+          })
+          .catch(error => {
+            console.error('Service Worker regisztrációs hiba:', error);
+          });
+      });
+    }
+
+    // Lazy loading a képekhez
+    function setupLazyLoading() {
+      if ("IntersectionObserver" in window) {
+        const lazyImages = document.querySelectorAll("img[data-src]");
+        let lazyImageObserver = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              const lazyImage = entry.target;
+              if (lazyImage.dataset.src) {
+                lazyImage.src = lazyImage.dataset.src;
+                lazyImage.removeAttribute("data-src");
+                lazyImageObserver.unobserve(lazyImage);
               }
             }
-          };
-        };
-      })
-      .catch(error => {
-        console.error('Service Worker regisztrációs hiba:', error);
-      });
-  });
-}
+          });
+        });
 
+        lazyImages.forEach(function(lazyImage) {
+          lazyImageObserver.observe(lazyImage);
+        });
+      }
+    }
 
-// Orientáció kezelés - ezt add hozzá a PageFlip inicializálást követően
-pageFlip.on('changeOrientation', (e) => {
-  // Megbizonyosodunk, hogy portrait módban vagyunk
-  if (e.data !== 'portrait') {
-    pageFlip.turnToPortrait();
-  }
-});
+    // 1. Finomhangolt touch (swipe) események
+    let touchStartX = 0;
+    let touchStartTime = 0;
 
-// És add hozzá ezt a segédfunkciót, ami biztosítja hogy mindig portrait módban leszünk
-function ensurePortraitMode() {
-  const container = document.getElementById("book");
-  container.classList.add('force-portrait');
-  
-  // Bizonyosodj meg róla, hogy mindig csak egy oldal látszódjon
-  if (pageFlip && pageFlip.getOrientation && pageFlip.getOrientation() !== 'portrait') {
-    setTimeout(() => pageFlip.turnToPortrait(), 200);
-  }
-}
+    document.addEventListener('touchstart', e => {
+      touchStartX = e.touches[0].clientX;
+      touchStartTime = Date.now();
+    }, { passive: true });
 
-// Hívd meg induláskor és ablakméret változáskor is
-ensurePortraitMode();
-window.addEventListener('resize', ensurePortraitMode);
+    document.addEventListener('touchend', e => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const deltaX = touchEndX - touchStartX;
+      const deltaTime = Date.now() - touchStartTime;
+
+      if (Math.abs(deltaX) > 30 && deltaTime < 300) {
+        deltaX > 0 ? pageFlip.flipPrev() : pageFlip.flipNext();
+      }
+    }, { passive: true });
+
+    // Orientáció kezelés - ezt add hozzá a PageFlip inicializálást követően
+    pageFlip.on('changeOrientation', (e) => {
+      // Megbizonyosodunk, hogy portrait módban vagyunk
+      if (e.data !== 'portrait') {
+        setTimeout(() => {
+          try {
+            if (typeof pageFlip.turnToPortrait === 'function') {
+              pageFlip.turnToPortrait();
+            }
+          } catch (error) {
+            console.log('turnToPortrait nem elérhető, alternatív megoldást használunk');
+            enforcePortraitMode();
+          }
+        }, 200);
+      }
+    });
+
+    // És add hozzá ezt a segédfunkciót, ami biztosítja hogy mindig portrait módban leszünk
+    function ensurePortraitMode() {
+      const container = document.getElementById("book");
+      container.classList.add('force-portrait');
+      
+      // Bizonyosodj meg róla, hogy mindig csak egy oldal látszódjon
+      if (pageFlip && pageFlip.getOrientation && pageFlip.getOrientation() !== 'portrait') {
+        setTimeout(() => {
+          try {
+            if (typeof pageFlip.turnToPortrait === 'function') {
+              pageFlip.turnToPortrait();
+            } else {
+              enforcePortraitMode();
+            }
+          } catch (error) {
+            console.log('Orientáció váltási hiba:', error);
+            enforcePortraitMode();
+          }
+        }, 200);
+      }
+    }
+
+    // Alternatív megoldás, ha a turnToPortrait nem elérhető
+    function enforcePortraitMode() {
+      const rect = pageFlip.getBoundsRect ? pageFlip.getBoundsRect() : 
+        document.getElementById('book').getBoundingClientRect();
+      
+      // Stílus beállítása a StPageFlip alapkonténerén
+      const stfBlocks = document.querySelectorAll('.stf__block');
+      if (stfBlocks.length > 0) {
+        stfBlocks.forEach(block => {
+          block.style.maxWidth = '800px';
+          block.style.margin = '0 auto';
+        });
+      }
+      
+      // Beállítjuk az oldalak láthatóságát
+      const pages = document.querySelectorAll('.page');
+      if (pages.length > 0) {
+        pages.forEach((page, index) => {
+          if (index === pageFlip.getCurrentPageIndex()) {
+            page.style.display = 'block';
+          } else {
+            page.style.display = 'none';
+          }
+        });
+      }
+    }
+
+    // Hívd meg induláskor és ablakméret változáskor is
+    ensurePortraitMode();
+    window.addEventListener('resize', ensurePortraitMode);
 
     const pages = [
       { type: 'image', path: 'images/oldalak/borito.webp' },
@@ -680,98 +797,126 @@ window.addEventListener('resize', ensurePortraitMode);
       fullscreenBtn.style.display = document.fullscreenElement ? "none" : "block";
     });
 
-    pageFlip.on('init', () => {
-      document.getElementById('loading').style.display = 'none';
-      pageIndicator.textContent = `Oldal 1 / ${pageFlip.getPageCount()}`;
-      handlePageLinks(pageFlip);
-    });
+   pageFlip.on('init', () => {
+ document.getElementById('loading').style.display = 'none';
+ pageIndicator.textContent = `Oldal 1 / ${pageFlip.getPageCount()}`;
+ handlePageLinks(pageFlip);
+ setupLazyLoading();
+ enforcePortraitMode();
+});
 
-    pageFlip.on('flip', (e) => {
-      if (!isMuted) {
-        flipSound.currentTime = 0;
-        flipSound.play().catch(e => console.log("Hang hiba:", e));
-      }
-      pageIndicator.textContent = `Oldal ${e.data + 1} / ${pageFlip.getPageCount()}`;
-      fullscreenBtn.style.display = e.data === 0 ? "block" : "none";
-      setTimeout(() => handlePageLinks(pageFlip), 100);
-    });
+pageFlip.on('flip', (e) => {
+ if (!isMuted) {
+   flipSound.currentTime = 0;
+   flipSound.play().catch(e => console.log("Hang hiba:", e));
+ }
+ pageIndicator.textContent = `Oldal ${e.data + 1} / ${pageFlip.getPageCount()}`;
+ fullscreenBtn.style.display = e.data === 0 ? "block" : "none";
+ setTimeout(() => {
+   handlePageLinks(pageFlip);
+   setupLazyLoading();
+   enforcePortraitMode();
+ }, 100);
+});
 
-    pageFlip.on('changeOrientation', () => {
-      pageFlip.update();
-    });
+pageFlip.on('changeOrientation', () => {
+ pageFlip.update();
+ enforcePortraitMode();
+});
 
-    window.addEventListener('resize', () => {
-      pageFlip.update();
-    });
+window.addEventListener('resize', () => {
+ pageFlip.update();
+ ensurePortraitMode();
+});
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') pageFlip.flipNext();
-      else if (e.key === 'ArrowLeft') pageFlip.flipPrev();
-    });
-  });
+document.addEventListener('keydown', (e) => {
+ if (e.key === 'ArrowRight') pageFlip.flipNext();
+ else if (e.key === 'ArrowLeft') pageFlip.flipPrev();
+});
+});
 
-  async function loadMixedPages(pages, pageFlip) {
-    const pageElements = [];
-    const totalPages = pages.length;
-    let loadedCount = 0;
-    const loadingText = document.getElementById('loading-text');
+async function loadMixedPages(pages, pageFlip) {
+ const pageElements = [];
+ const totalPages = pages.length;
+ let loadedCount = 0;
+ const loadingText = document.getElementById('loading-text');
 
-    for (const page of pages) {
-      try {
-        loadingText.textContent = `Betöltés: ${loadedCount + 1}/${totalPages}`;
-        const pageElement = document.createElement('div');
-        pageElement.className = 'page';
+ for (const page of pages) {
+   try {
+     loadingText.textContent = `Betöltés: ${loadedCount + 1}/${totalPages}`;
+     const pageElement = document.createElement('div');
+     pageElement.className = 'page';
 
-        if (page.type === 'image') {
-          const img = document.createElement('img');
-          img.src = page.path;
-          img.className = 'cover-image';
-          img.alt = 'Oldalkép';
-          pageElement.appendChild(img);
-        } else if (page.type === 'html') {
-          try {
-            const response = await fetch(page.path);
-            if (!response.ok) throw new Error(`HTTP hiba: ${response.status}`);
-            const html = await response.text();
-            pageElement.innerHTML = html;
-          } catch (error) {
-            console.error(`Hiba a HTML oldal betöltésénél: ${page.path}`, error);
-            pageElement.innerHTML = `
-              <div class="page-content">
-                <h2 class="page-title">Betöltési hiba</h2>
-                <div class="page-text">
-                  <p>Az oldal nem tölthető be: ${page.path}</p>
-                  <p>Hiba: ${error.message}</p>
-                </div>
-              </div>`;
-          }
-        }
+     if (page.type === 'image') {
+       // Lazy loading a képekhez
+       const container = document.createElement('div');
+       container.className = 'page-image-container';
+       
+       const img = document.createElement('img');
+       img.className = 'cover-image';
+       img.alt = 'Oldalkép';
+       // Lazy loading beállítása
+       img.setAttribute('data-src', page.path);
+       img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"%3E%3C/svg%3E'; // Placeholder
+       
+       container.appendChild(img);
+       pageElement.appendChild(container);
+     } else if (page.type === 'html') {
+       try {
+         const response = await fetch(page.path);
+         if (!response.ok) throw new Error(`HTTP hiba: ${response.status}`);
+         const html = await response.text();
+         pageElement.innerHTML = html;
+         
+         // Lazy loading beállítása a HTML-en belüli képekhez
+         pageElement.querySelectorAll('img:not([data-src])').forEach(img => {
+           const src = img.getAttribute('src');
+           if (src && !src.startsWith('data:')) {
+             img.setAttribute('data-src', src);
+             img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"%3E%3C/svg%3E';
+           }
+         });
+       } catch (error) {
+         console.error(`Hiba a HTML oldal betöltésénél: ${page.path}`, error);
+         pageElement.innerHTML = `
+           <div class="page-content">
+             <h2 class="page-title">Betöltési hiba</h2>
+             <div class="page-text">
+               <p>Az oldal nem tölthető be: ${page.path}</p>
+               <p>Hiba: ${error.message}</p>
+             </div>
+           </div>`;
+       }
+     }
 
-        pageElements.push(pageElement);
-        loadedCount++;
-        await new Promise(resolve => setTimeout(resolve, 100));
-      } catch (error) {
-        console.error('Általános hiba oldal betöltésekor:', error);
-      }
-    }
+     pageElements.push(pageElement);
+     loadedCount++;
+     await new Promise(resolve => setTimeout(resolve, 100));
+   } catch (error) {
+     console.error('Általános hiba oldal betöltésekor:', error);
+   }
+ }
 
-    pageFlip.loadFromHTML(pageElements);
-    return pageFlip;
-  }
+ pageFlip.loadFromHTML(pageElements);
+ return pageFlip;
+}
 
-  function handlePageLinks(pageFlip) {
-    document.querySelectorAll('[data-page]').forEach(link => {
-      link.addEventListener('click', function (e) {
-        e.preventDefault();
-        const targetPage = parseInt(this.getAttribute('data-page'));
-        if (!isNaN(targetPage)) {
-          pageFlip.flip(targetPage - 1);
-        }
-      });
-    });
-  }
+function handlePageLinks(pageFlip) {
+ document.querySelectorAll('[data-page]').forEach(link => {
+   // Csak akkor adjuk hozzá az eseménykezelőt, ha még nincs
+   if (!link.hasAttribute('data-event-attached')) {
+     link.setAttribute('data-event-attached', 'true');
+     link.addEventListener('click', function (e) {
+       e.preventDefault();
+       const targetPage = parseInt(this.getAttribute('data-page'));
+       if (!isNaN(targetPage)) {
+         pageFlip.flip(targetPage - 1);
+       }
+     });
+   }
+ });
+}
 </script>
-
 
 </body>
 </html>
