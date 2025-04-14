@@ -491,8 +491,8 @@
       loadMixedPages(pages).then(() => {
         // Turn.js inicializálása
         $("#book").turn({
-          width: 800,
-          height: 600,
+          width: 1979,
+          height: 2800,
           autoCenter: true,
           display: 'single',    // Egyszerre egy oldal legyen látható
           acceleration: true,   // Hardveres gyorsítás
@@ -532,12 +532,20 @@
   const containerWidth = window.innerWidth;
   const containerHeight = window.innerHeight;
 
-  const width = Math.min(containerWidth * 0.9, 800);
-  const height = Math.min(containerHeight * 0.9, 600);
+  // Arány kiszámítása a borító mérete alapján
+  const targetRatio = 2800 / 1979; // vagyis magasság / szélesség
 
+  // A kívánt szélesség maximum 90% a képernyőből vagy 800px
+  const width = Math.min(containerWidth * 0.9, 800);
+
+  // A magasság legyen ennek az arányos megfelelője
+  const height = width * targetRatio;
+
+  // Turn.js könyv méretének beállítása
   $("#book").turn("size", width, height);
   $("#book").turn("center");
 }
+
 
 
 // Egérkattintás figyelése a könyv területén
