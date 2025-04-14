@@ -29,52 +29,19 @@
   <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
   
-  <!-- StPageFlip CSS (KÖTELEZŐ) -->
-  <link rel="stylesheet" href="css/page-flip.min.css">
-  
   <style>
     html, body {
-      height: 100vh;
-      width: 100vw;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      position: fixed; /* Megakadályozza a teljes oldal görgetését */
-      background-color: #323232;
-    }
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
     
-    /* Könyv konténer méretezése */
     #book {
       width: 100%;
       height: 100%;
-      max-width: 100vw;
-      max-height: 100vh;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-    
-    /* StPageFlip felülbírálások a jobb reszponzivitásért */
-    .stf__parent {
-      width: 100% !important;
-      height: 100% !important;
-      overflow: hidden !important;
-    }
-    
-    .stf__wrapper {
-      width: 100% !important;
-      height: 100% !important;
-      position: relative !important;
-    }
-    
-    .stf__block {
-      max-width: 100% !important;
-      max-height: 100% !important;
-      position: absolute !important;
-    }
-    
-    .stf__item {
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important;
     }
     
     /* Oldal tartalom stílusok */
@@ -82,14 +49,16 @@
       width: 100%;
       height: 100%;
       box-sizing: border-box;
-      padding: 5%;
+      padding: 40px;
       background-color: #f9f7e8; /* pergamen háttér */
       color: #333;
       overflow: auto;
       position: relative;
       display: flex;
       flex-direction: column;
-      -ms-overflow-style: none;  /* IE és Edge */
+      max-width: 100%;
+      margin: 0 auto;
+      -ms-overflow-style: none;  /* IE and Edge */
       scrollbar-width: none;  /* Firefox */
     }
     
@@ -110,37 +79,36 @@
     
     .page-title {
       text-align: center;
-      margin-bottom: clamp(15px, 4vh, 30px);
-      font-size: clamp(16px, 4vw, 28px);
+      margin-bottom: 30px;
+      font-size: clamp(20px, 4vw, 28px);
       border-bottom: 2px solid #963;
-      padding-bottom: clamp(5px, 2vh, 15px);
+      padding-bottom: 15px;
     }
     
     .page-text {
-      font-size: clamp(14px, 3vw, 18px);
+      font-size: clamp(16px, 3vw, 18px);
       line-height: 1.6;
       text-align: justify;
       flex-grow: 1;
-      margin-bottom: clamp(15px, 4vh, 30px);
+      margin-bottom: 30px;
     }
     
     .choices {
       margin-top: auto;
       border-top: 1px dashed #963;
-      padding-top: clamp(10px, 3vh, 20px);
+      padding-top: 20px;
     }
     
     .choices a {
       display: block;
-      margin: clamp(8px, 2vh, 15px) 0;
-      padding: clamp(6px, 2vh, 12px);
+      margin: 15px 0;
+      padding: 12px;
       background: rgba(150, 100, 50, 0.1);
       border-radius: 5px;
       color: #633;
       text-decoration: none;
       transition: all 0.3s;
       cursor: pointer;
-      font-size: clamp(14px, 2.5vw, 16px);
     }
     
     .page-dark .choices a {
@@ -161,21 +129,21 @@
     
     .page-number {
       text-align: center;
-      margin-top: clamp(10px, 2vh, 20px);
+      margin-top: 20px;
       font-style: italic;
-      font-size: clamp(12px, 2vw, 14px);
     }
     
     /* Kép háttér beállítása */
     .cover-image {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      position: absolute;
-      top: 0;
-      left: 0;
-      margin: 0;
-    }
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+  position: absolute;
+  display: block;
+  margin: 0 auto;
+}
+
     
     /* Borító és utolsó oldal stílusai */
     .hard-cover {
@@ -183,7 +151,6 @@
       width: 100%;
       height: 100%;
       position: relative;
-      overflow: hidden;
     }
     
     /* Betöltési indikátor */
@@ -200,12 +167,12 @@
       align-items: center;
       z-index: 9999;
       color: white;
-      font-size: clamp(18px, 4vw, 24px);
+      font-size: 24px;
     }
     
     .spinner {
-      width: clamp(40px, 8vw, 60px);
-      height: clamp(40px, 8vw, 60px);
+      width: 60px;
+      height: 60px;
       border: 6px solid #f3f3f3;
       border-top: 6px solid #7f00ff;
       border-radius: 50%;
@@ -219,61 +186,64 @@
     }
     
     /* Minden egyéb vezérlő és widget */
-    #dice-widget-container, #single-dice-widget-container {
+    #dice-widget-container {
       position: fixed;
-      bottom: clamp(80px, 15vh, 160px);
-      right: clamp(10px, 5vw, 20px);
+      bottom: 160px;
+      right: 20px;
       z-index: 1000;
       background: rgba(0, 0, 0, 0.8);
       border-radius: 10px;
-      padding: clamp(5px, 2vw, 10px);
+      padding: 10px;
       display: none;
-      max-width: min(90vw, 300px);
     }
 
-    .dice-toggle, .single-dice-toggle {
+    #single-dice-widget-container {
       position: fixed;
-      bottom: clamp(10px, 3vh, 20px);
+      bottom: 80px;
+      right: 20px;
       z-index: 1000;
-      width: clamp(40px, 8vw, 50px);
-      height: clamp(40px, 8vw, 50px);
-      background: #7f00ff;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: clamp(16px, 3vw, 24px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 10px;
+      padding: 10px;
+      display: none;
     }
 
     .dice-toggle {
-      right: clamp(10px, 5vw, 20px);
-    }
-
-    .single-dice-toggle {
-      right: clamp(60px, 13vw, 80px);
-    }
-
-    .mute-toggle {
       position: fixed;
-      bottom: clamp(10px, 3vh, 20px);
-      left: clamp(10px, 5vw, 20px);
+      bottom: 20px; 
+      right: 20px;
       z-index: 1000;
-      width: clamp(40px, 8vw, 50px);
-      height: clamp(40px, 8vw, 50px);
+      width: 50px;
+      height: 50px;
       background: #7f00ff;
       color: white;
       border: none;
       border-radius: 50%;
       cursor: pointer;
-      font-size: clamp(16px, 3vw, 24px);
+      font-size: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
+    .single-dice-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 80px;
+      z-index: 1000;
+      width: 50px;
+      height: 50px;
+      background: #7f00ff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+	
     #fullscreen-button {
       position: fixed;
       bottom: 20%;
@@ -282,25 +252,43 @@
       z-index: 1001;
       color: white;
       background: rgba(0, 0, 0, 0.6);
-      padding: clamp(6px, 2vw, 10px) clamp(10px, 3vw, 16px);
+      padding: 8px 16px;
       border-radius: 4px;
       font-family: 'Cinzel', serif;
-      font-size: clamp(12px, 2.5vw, 16px);
+      font-size: 16px;
       cursor: pointer;
       transition: opacity 0.3s ease;
     }
 
+    .mute-toggle {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 1000;
+      width: 50px;
+      height: 50px;
+      background: #7f00ff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     #page-indicator {
       position: fixed;
-      bottom: clamp(20px, 5vh, 40px);
+      bottom: 40px;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(0, 0, 0, 0.7);
       color: white;
-      padding: clamp(5px, 2vw, 10px) clamp(10px, 3vw, 20px);
+      padding: 10px 20px;
       border-radius: 10px;
       font-family: 'Cinzel', serif;
-      font-size: clamp(14px, 2.5vw, 18px);
+      font-size: 1.2rem;
       z-index: 1000;
       pointer-events: none;
     }
@@ -311,21 +299,20 @@
       color: white;
       background: black;
       display: inline-block;
-      padding: clamp(5px, 2vw, 10px);
+      padding: 10px;
       border-radius: 5px;
       text-align: center;
-      margin-bottom: clamp(5px, 2vw, 10px);
-      font-size: clamp(14px, 2.5vw, 16px);
+      margin-bottom: 10px;
     }
     
     .dice-button {
-      padding: clamp(8px, 2.5vw, 10px) clamp(15px, 4vw, 20px);
-      margin-top: clamp(5px, 2vw, 10px);
+      padding: 10px 20px;
+      margin-top: 10px;
       background: #7f00ff;
       color: white;
       border: none;
       border-radius: 5px;
-      font-size: clamp(14px, 2.2vw, 18px);
+      font-size: 1.1rem;
       cursor: pointer;
       box-shadow: 0 0 10px rgba(127, 0, 255, 0.5);
     }
@@ -338,25 +325,113 @@
     .dice-results {
       display: flex;
       justify-content: center;
-      flex-wrap: wrap;
-      gap: clamp(5px, 2vw, 10px);
-      margin-top: clamp(10px, 3vw, 20px);
-    }
-    
-    .dice-results img {
-      width: clamp(60px, 10vw, 80px);
-      height: clamp(60px, 10vw, 80px);
+      gap: 10px;
+      margin-top: 20px;
     }
     
     #success-results {
       background: black;
       color: white;
       display: inline-block;
-      padding: clamp(3px, 1.5vw, 5px) clamp(6px, 2.5vw, 10px);
+      padding: 5px 10px;
       border-radius: 5px;
-      margin-top: clamp(5px, 2vw, 10px);
-      font-size: clamp(14px, 2.5vw, 18px);
+      margin-top: 10px;
+      font-size: 1.2rem;
     }
+    
+    /* Reszponzív beállítások */
+    @media screen and (max-width: 768px) {
+      .page-content {
+        padding: 20px;
+      }
+      
+      .choices a {
+        padding: 8px;
+        font-size: 0.9em;
+      }
+    }
+
+    /* StPageFlip felülbírálások a jobb animációkért */
+    .stf__item {
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+    }
+    
+    .stf__wrapper {
+      perspective: 2000px;
+    }
+	
+
+/* Reszponzív oldaltartalom - módosítások */
+.page-content {
+  padding: 5%; /* Adaptív padding, a meglévő 40px helyett */
+  /* A többi meglévő beállítás marad */
+}
+
+/* Adaptív szövegméret */
+.page-title {
+  font-size: clamp(16px, 5vw, 28px);
+  margin-bottom: clamp(15px, 4vw, 30px);
+}
+
+.page-text {
+  font-size: clamp(14px, 3vw, 18px);
+}
+
+/* Adaptív borítókép */
+.cover-image {
+  object-fit: contain; /* 'cover' helyett 'contain' */
+  max-height: 100%;
+  max-width: 100%;
+}
+
+/* Media query-k különböző eszközökhöz */
+@media (max-width: 480px) {
+  /* Mobiltelefon */
+  .page-content {
+    padding: 15px;
+  }
+  .page-title {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  .page-text {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  /* Tablet */
+  .page-content {
+    padding: 20px;
+  }
+  .page-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  .page-text {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Desktop */
+  .page-content {
+    padding: 30px 40px;
+  }
+}
+
+/* StPageFlip beállítások felülírása a jobb megjelenítéshez */
+.stf__parent {
+  margin: 0 auto;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.stf__block {
+  box-sizing: border-box;
+}
+	
   </style>
 </head>
 <body>
@@ -371,12 +446,12 @@
   
   <!-- Kockadobás widgetek -->
   <button class="dice-toggle" onclick="toggleDiceWidget()" title="3 Kockás dobás" style="padding: 4px 6px;">
-    <span style="font-size: clamp(12px, 2.5vw, 15px);">🎲🎲🎲</span>
+    <span style="font-size: 15px;">🎲🎲🎲</span>
   </button>
   <div id="dice-widget-container"></div>
   
   <button class="single-dice-toggle" onclick="toggleSingleDiceWidget()" title="1 Kockás dobás" style="padding: 4px 6px;">
-    <span style="font-size: clamp(12px, 2.5vw, 15px);">🎲</span>
+    <span style="font-size: 15px;">🎲</span>
   </button>
   <div id="single-dice-widget-container"></div>
 
@@ -441,6 +516,8 @@
           const img = document.createElement('img');
           img.src = diceImages[roll];
           img.alt = `Kocka: ${roll}`;
+          img.style.width = '80px';
+          img.style.height = '80px';
           diceContainer.appendChild(img);
 
           if (roll >= 4) {
@@ -516,6 +593,8 @@
       const img = document.createElement('img');
       img.src = diceImages[roll];
       img.alt = `Kocka: ${roll}`;
+      img.style.width = '80px';
+      img.style.height = '80px';
       diceContainer.appendChild(img);
     }
     
@@ -533,7 +612,8 @@
     }
   </script>
 
-  <!-- StPageFlip könyvtár betöltése - AZ EREDETI FÁJL -->
+  <!-- StPageFlip könyvtár betöltése -->
+  <link rel="stylesheet" href="css/page-flip.min.css" />
   <script src="js/page-flip.browser.js"></script>
 
   <script>
@@ -543,27 +623,27 @@
       
       // PageFlip inicializálása a javított animációs paraméterekkel
       const pageFlip = new St.PageFlip(document.getElementById("book"), {
-        // Automatikus méretezés a képernyőhöz
-        size: "stretch",
-        // Minimális és maximális méretek
-        minWidth: 300,
-        maxWidth: 1000,
-        minHeight: 400,
-        maxHeight: 1400,
-        // Arány megtartása
-        width: 640,
-        height: 900,
-        // További paraméterek
-        maxShadowOpacity: 0.5,
-        showCover: true,
-        mobileScrollSupport: false,
-        flippingTime: 1000,
-        usePortrait: true,
-        drawShadow: true,
-        startZIndex: 5,
-        autoSize: true,
-        clickEventForward: true
-      });
+  // Automatikus méretezés a képernyőhöz
+  size: "stretch",
+  // Minimális és maximális méretek
+  minWidth: 300,
+  maxWidth: 1000,
+  minHeight: 400,
+  maxHeight: 1400,
+  // Arány megtartása
+  width: 640,
+  height: 900,
+  // További paraméterek
+  maxShadowOpacity: 0.5,
+  showCover: true,
+  mobileScrollSupport: false,
+  flippingTime: 1000,
+  usePortrait: true,
+  drawShadow: true,
+  startZIndex: 5,
+  autoSize: true,
+  clickEventForward: true
+});
       
       // Oldalak definíciója - konzisztensebb kezelés a borítóra és utolsó oldalra
       const pages = [
@@ -591,21 +671,14 @@
       ];
       
       // Kezdeti frissítés, hogy biztosan jó mérettel induljon
-      setTimeout(() => pageFlip.update(), 100);
+setTimeout(() => pageFlip.update(), 100);
 
-      // Ablakméret változásakor frissítés
-      window.addEventListener('resize', function() {
-        setTimeout(function() {
-          pageFlip.update();
-        }, 100);
-      });
-
-      // Oldalak betöltése és a könyv inicializálása
-      loadMixedPages(pages, pageFlip).then(() => {
-        console.log("Könyv sikeresen betöltve");
-      }).catch(error => {
-        console.error("Hiba a könyv betöltésekor:", error);
-      });
+// Oldalak betöltése és a könyv inicializálása
+loadMixedPages(pages, pageFlip).then(() => {
+  console.log("Könyv sikeresen betöltve");
+}).catch(error => {
+  console.error("Hiba a könyv betöltésekor:", error);
+});
       
       // Események és vezérlők beállítása
       const flipSound = document.getElementById("flipSound");
@@ -657,7 +730,7 @@
         // Lapozási hang lejátszása, ha nincs némítva
         if (!isMuted) {
           flipSound.currentTime = 0;
-          flipSound.play().catch(e => console.log("Hang lejátszási hiba:", e));
+          flipSound.play();
         }
 
         // Oldalszám frissítése
@@ -683,13 +756,10 @@
         pageFlip.update();
       });
       
-      // Billentyűzet támogatás
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight') {
-          pageFlip.flipNext();
-        } else if (e.key === 'ArrowLeft') {
-          pageFlip.flipPrev();
-        }
+      // Ablakméret változásának kezelése
+      window.addEventListener('resize', () => {
+        // Könyv méretének frissítése, ha szükséges
+        pageFlip.update();
       });
     });
     
@@ -774,21 +844,21 @@
           loadedCount++;
           
           // Egy kis késleltetés a betöltési animáció láthatóságáért
-         await new Promise(resolve => setTimeout(resolve, 100));
-       } catch (error) {
-         console.error('Hiba az oldal betöltésekor:', error);
-       }
-     }
-     
-     // Az utolsó oldalt is keményborítóvá tesszük a konzisztens animáció érdekében
-     if (pageElements.length > 0 && !pageElements[pageElements.length-1].hasAttribute('data-density')) {
-       pageElements[pageElements.length-1].setAttribute('data-density', 'hard');
-     }
-     
-     // Oldalak betöltése a könyvbe
-     pageFlip.loadFromHTML(pageElements);
-     return pageFlip;
-   }
- </script>
+          await new Promise(resolve => setTimeout(resolve, 100));
+        } catch (error) {
+          console.error('Hiba az oldal betöltésekor:', error);
+        }
+      }
+      
+      // Az utolsó oldalt is keményborítóvá tesszük a konzisztens animáció érdekében
+      if (pageElements.length > 0 && !pageElements[pageElements.length-1].hasAttribute('data-density')) {
+        pageElements[pageElements.length-1].setAttribute('data-density', 'hard');
+      }
+      
+      // Oldalak betöltése a könyvbe
+      pageFlip.loadFromHTML(pageElements);
+      return pageFlip;
+    }
+  </script>
 </body>
 </html>
