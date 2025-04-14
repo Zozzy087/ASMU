@@ -797,7 +797,7 @@
       fullscreenBtn.style.display = document.fullscreenElement ? "none" : "block";
     });
 
-   pageFlip.on('init', () => {
+    pageFlip.on('init', () => {
  document.getElementById('loading').style.display = 'none';
  pageIndicator.textContent = `Oldal 1 / ${pageFlip.getPageCount()}`;
  handlePageLinks(pageFlip);
