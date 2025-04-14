@@ -8,20 +8,223 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body, html {
-      margin: 0; padding: 0; width: 100%; height: 100%;
-      overflow: hidden; background-color: #323232; font-family: 'Cinzel', serif;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #323232;
+      font-family: 'Cinzel', serif;
     }
-    #book-container { width: 100%; height: 100vh; overflow: hidden; position: relative; }
-    #book-page { width: 100%; height: 100%; border: none; transition: opacity 0.3s ease, transform 0.3s ease; }
-    .controls, #fullscreen-button, #page-indicator, .mute-toggle { position: fixed; z-index: 1000; }
-    .controls { bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; }
-    .controls button, #fullscreen-button { padding: 10px; background: black; color: white; border-radius: 5px; cursor: pointer; border: none; }
-    #fullscreen-button { bottom: 20%; left: 50%; transform: translateX(-50%); }
-    .mute-toggle { bottom: 20px; left: 20px; width: 50px; height: 50px; border-radius: 50%; background: #7f00ff; color: white; cursor: pointer; font-size: 24px; display: flex; align-items: center; justify-content: center; }
-    #page-indicator { bottom: 40px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; padding: 5px 15px; border-radius: 5px; pointer-events: none; }
+    
+    #book {
+      width: 100%;
+      height: 100%;
+    }
+    
+   
+    
+    /* Vezérlők */
+    .controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      gap: 10px;
+    }
+    
+    .controls button {
+      padding: 10px 20px;
+      background: black;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    
+    /* Két widget pozícionálása egymás alatt a jobb oldalon */
+#dice-widget-container {
+  position: fixed;
+  bottom: 160px;  /* Feljebb helyezve, hogy alatta legyen hely a másiknak */
+  right: 20px;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 10px;
+  padding: 10px;
+  display: none;
+}
+
+#single-dice-widget-container {
+  position: fixed;
+  bottom: 80px;  /* Az 1 kockás dobás lejjebb */
+  right: 20px;   /* Jobb oldalra, ugyanahová mint a másik */
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 10px;
+  padding: 10px;
+  display: none;
+}
+
+.dice-toggle {
+  position: fixed;
+  bottom: 20px; 
+  right: 20px;
+  z-index: 1000;
+  width: 50px;
+  height: 50px;
+  background: #7f00ff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.single-dice-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 80px;  /* A 3 kockás mellett jobbra */
+  z-index: 1000;
+  width: 50px;
+  height: 50px;
+  background: #7f00ff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+	
+    #fullscreen-button {
+      position: fixed;
+      bottom: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1001;
+      color: white;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-family: 'Cinzel', serif;
+      font-size: 16px;
+      cursor: pointer;
+      transition: opacity 0.3s ease;
+    }
+
+    .mute-toggle {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 1000;
+      width: 50px;
+      height: 50px;
+      background: #7f00ff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #page-indicator {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-family: 'Cinzel', serif;
+      font-size: 1.2rem;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    
+    /* Kockadobás widgetek belső stílusai */
+    .dice-title {
+      font-family: 'Cinzel', serif;
+      color: white;
+      background: black;
+      display: inline-block;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    
+    .dice-button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      background: #7f00ff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(127, 0, 255, 0.5);
+    }
+    
+    .dice-button:hover {
+      background: #a020f0;
+      transform: scale(1.05);
+    }
+    
+    .dice-results {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    #success-results {
+      background: black;
+      color: white;
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+      font-size: 1.2rem;
+    }
+	
+	#book-container {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+#book-page {
+  width: 100%;
+  height: 100%;
+  border: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
   </style>
 </head>
 <body>
+
+<!-- Kockadobás widgetek -->
+  <button class="dice-toggle" onclick="toggleDiceWidget()" title="3 Kockás dobás" style="padding: 4px 6px;">
+    <span style="font-size: 15px;">🎲🎲🎲</span>
+  </button>
+  <div id="dice-widget-container"></div>
+  
+  <button class="single-dice-toggle" onclick="toggleSingleDiceWidget()" title="1 Kockás dobás" style="padding: 4px 6px;">
+    <span style="font-size: 15px;">🎲</span>
+  </button>
+  <div id="single-dice-widget-container"></div>
 
 <div id="book-container">
   <iframe id="book-page" src="pages/1.html"></iframe>
