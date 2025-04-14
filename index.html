@@ -55,14 +55,11 @@
       align-items: center;
     }
     
-    /* Turn.js által használt könyv - Javított reszponzivitás */
+    /* Turn.js által használt könyv */
     #book {
-      width: 90vw;
-      height: 80vh;
-      max-width: 800px;
-      max-height: 600px;
+      width: 800px;
+      height: 600px;
       margin: 0 auto;
-      transition: all 0.3s ease;
     }
     
     /* Oldal stílusok */
@@ -187,13 +184,6 @@
       align-items: center;
       justify-content: center;
       z-index: 1000;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      transition: transform 0.2s, background 0.2s;
-    }
-    
-    .dice-toggle:active, .single-dice-toggle:active, .mute-toggle:active {
-      transform: scale(0.95);
-      background: #6600cc;
     }
     
     .dice-toggle {
@@ -220,11 +210,6 @@
       border-radius: 4px;
       font-size: 16px;
       cursor: pointer;
-      transition: background 0.3s;
-    }
-    
-    #fullscreen-button:hover {
-      background: rgba(0, 0, 0, 0.8);
     }
     
     #page-indicator {
@@ -240,42 +225,18 @@
       z-index: 1000;
     }
     
-    /* Improved Reszponzív beállítások */
+    /* Reszponzív beállítások */
     @media (max-width: 800px) {
       #book {
-        width: 95vw;
-        height: 75vh;
-      }
-    }
-
-    @media (max-width: 600px) {
-      #book {
-        width: 100vw;
-        height: 80vh;
-        max-width: none;
-      }
-      
-      .dice-toggle, .single-dice-toggle {
-        width: 45px;
-        height: 45px;
-        font-size: 18px;
-      }
-      
-      .mute-toggle {
-        width: 45px;
-        height: 45px;
-      }
-      
-      #page-indicator {
-        font-size: 14px;
-        padding: 6px 12px;
+        width: 100%;
+        height: 100%;
       }
     }
 
     @media (orientation: portrait) {
       #book {
-        width: 95vw;
-        height: 70vh;
+        width: 100%;
+        height: 80%;
       }
     }
     
@@ -294,39 +255,6 @@
       height: 100%;
       object-fit: cover;
     }
-    
-    /* Error üzenet stílusa */
-    .error-page {
-      background-color: #ffeded;
-      color: #c00;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
-    }
-    
-    /* Offline mód figyelmeztetés */
-    #offline-message {
-      position: fixed;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 5px;
-      z-index: 1002;
-      font-size: 14px;
-      display: none;
-    }
-    
-    /* Akadálymentesítés - fókusz stílus */
-    button:focus, a:focus {
-      outline: 2px solid #7f00ff;
-      outline-offset: 2px;
-    }
   </style>
 </head>
 <body>
@@ -335,9 +263,6 @@
     <div class="spinner"></div>
     <span id="loading-text">Kalandkönyv betöltése...</span>
   </div>
-  
-  <!-- Offline mód figyelmeztetés -->
-  <div id="offline-message">Offline módban vagy. Néhány funkció korlátozottan érhető el.</div>
   
   <!-- Könyv konténer -->
   <div id="book-container">
@@ -514,22 +439,6 @@
             console.error('Service Worker hiba:', err);
           });
       });
-      
-      // Offline állapot figyelése
-      window.addEventListener('online', updateOnlineStatus);
-      window.addEventListener('offline', updateOnlineStatus);
-      
-      function updateOnlineStatus() {
-        const offlineMessage = document.getElementById('offline-message');
-        if (!navigator.onLine) {
-          offlineMessage.style.display = 'block';
-          setTimeout(() => {
-            offlineMessage.style.display = 'none';
-          }, 3000);
-        } else {
-          offlineMessage.style.display = 'none';
-        }
-      }
     }
     
     // Oldal betöltése után
@@ -551,10 +460,7 @@
       const fullscreenBtn = document.getElementById("fullscreen-button");
       const pageIndicator = document.getElementById("page-indicator");
       const muteButton = document.getElementById("mute-button");
-      let isMuted = localStorage.getItem('isMuted') === 'true' || false;
-      
-      // Hang némítás állapotának visszaállítása
-      muteButton.textContent = isMuted ? "🔇" : "🔊";
+      let isMuted = false;
       
       // Betöltő indikátor
       const loadingText = document.getElementById('loading-text');
@@ -596,41 +502,7 @@
         });
         
         updateBookSize();
-        
-        // Touch események hozzáadása
-        setupTouchEvents();
       });
-      
-      // Touch események kezelése
-      function setupTouchEvents() {
-        let startX = 0;
-        let startY = 0;
-        let touchStartTime = 0;
-      
-        $("#book").on("touchstart", function(e) {
-          startX = e.originalEvent.touches[0].pageX;
-          startY = e.originalEvent.touches[0].pageY;
-          touchStartTime = new Date().getTime();
-        });
-      
-        $("#book").on("touchend", function(e) {
-          const endX = e.originalEvent.changedTouches[0].pageX;
-          const endY = e.originalEvent.changedTouches[0].pageY;
-          const deltaX = endX - startX;
-          const deltaY = Math.abs(endY - startY);
-          const touchEndTime = new Date().getTime();
-          const touchDuration = touchEndTime - touchStartTime;
-          
-          // Horizontális swipe-ok kezelése, ha nincs nagy vertikális mozgás
-          if (Math.abs(deltaX) > 50 && deltaY < 100 && touchDuration < 300) {
-            if (deltaX > 0) {
-              $(this).turn("previous");
-            } else {
-              $(this).turn("next");
-            }
-          }
-        });
-      }
       
       // Könyv méretének frissítése a képernyőhöz
       function updateBookSize() {
@@ -641,11 +513,11 @@
         if (width < height) {
           // Portré mód
           $("#book").turn("display", "single");
-          $("#book").turn("size", Math.min(width * 0.95, 800), Math.min(height * 0.7, 600));
+          $("#book").turn("size", Math.min(width * 0.9, 800), Math.min(height * 0.7, 600));
         } else {
           // Tájkép mód (továbbra is egy oldal)
           $("#book").turn("display", "single");
-          $("#book").turn("size", Math.min(width * 0.7, 800), Math.min(height * 0.8, 600));
+          $("#book").turn("size", Math.min(width * 0.5, 800), Math.min(height * 0.8, 600));
         }
         
         // Középre igazítás
@@ -656,33 +528,14 @@
       muteButton.addEventListener("click", () => {
         isMuted = !isMuted;
         muteButton.textContent = isMuted ? "🔇" : "🔊";
-        localStorage.setItem('isMuted', isMuted.toString());
       });
       
       fullscreenBtn.addEventListener("click", () => {
-        toggleFullscreen();
-      });
-      
-      function toggleFullscreen() {
         const elem = document.documentElement;
-        if (!document.fullscreenElement) {
-          if (elem.requestFullscreen) {
-            elem.requestFullscreen();
-          } else if (elem.webkitRequestFullscreen) {
-            elem.webkitRequestFullscreen();
-          } else if (elem.msRequestFullscreen) {
-            elem.msRequestFullscreen();
-          }
-        } else {
-          if (document.exitFullscreen) {
-            document.exitFullscreen();
-          } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-          } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-          }
-        }
-      }
+        if (elem.requestFullscreen) elem.requestFullscreen();
+        else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+        else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+      });
       
       document.addEventListener("fullscreenchange", () => {
         fullscreenBtn.style.display = document.fullscreenElement ? "none" : "block";
@@ -697,12 +550,6 @@
           $("#book").turn("previous");
         } else if (e.keyCode == 39) {  // jobb nyíl
           $("#book").turn("next");
-        } else if (e.keyCode == 70) {  // F billentyű
-          toggleFullscreen();
-        } else if (e.keyCode == 77) {  // M billentyű
-          isMuted = !isMuted;
-          muteButton.textContent = isMuted ? "🔇" : "🔊";
-          localStorage.setItem('isMuted', isMuted.toString());
         }
       });
     });
@@ -710,8 +557,6 @@
     // HTML oldalak és képek betöltése
     async function loadMixedPages(pages) {
       const book = document.getElementById('book');
-      book.innerHTML = ''; // Reset könyv tartalom
-      
       const totalPages = pages.length;
       let loadedCount = 0;
       const loadingText = document.getElementById('loading-text');
@@ -722,71 +567,37 @@
         const pageElement = document.createElement('div');
         pageElement.className = 'page-wrapper';
         
-        try {
-          if (page.type === 'image') {
-            // Kép oldal betöltése
-            const img = document.createElement('img');
-            img.src = page.path;
-            img.className = 'cover-image';
-            img.alt = 'Könyv borító';
-            img.onerror = function() {
-              this.onerror = null;
-              this.src = 'images/error-image.png'; // Fallback kép hiba esetén
-              console.error(`Hiba a kép betöltésénél: ${page.path}`);
-            };
-            pageElement.appendChild(img);
-          } else if (page.type === 'html') {
-            // HTML oldal betöltése
-            try {
-              const response = await fetch(page.path);
-              if (!response.ok) throw new Error(`HTTP hiba: ${response.status}`);
-              const html = await response.text();
-              pageElement.innerHTML = html;
-            } catch (error) {
-              console.error(`Hiba a HTML oldal betöltésénél: ${page.path}`, error);
-              pageElement.innerHTML = `
-                <div class="page-content error-page">
-                  <h2 class="page-title">Betöltési hiba</h2>
-                  <div class="page-text">
-                    <p>Az oldal nem tölthető be: ${page.path}</p>
-                    <p>Hiba: ${error.message}</p>
-                    <p>Ellenőrizd az internet kapcsolatot vagy próbáld újra később.</p>
-                  </div>
-                </div>`;
-            }
+        if (page.type === 'image') {
+          // Kép oldal betöltése
+          const img = document.createElement('img');
+          img.src = page.path;
+          img.className = 'cover-image';
+          img.alt = 'Könyv borító';
+          pageElement.appendChild(img);
+        } else if (page.type === 'html') {
+          // HTML oldal betöltése
+          try {
+            const response = await fetch(page.path);
+            if (!response.ok) throw new Error(`HTTP hiba: ${response.status}`);
+            const html = await response.text();
+            pageElement.innerHTML = html;
+          } catch (error) {
+            console.error(`Hiba a HTML oldal betöltésénél: ${page.path}`, error);
+            pageElement.innerHTML = `
+              <div class="page-content">
+                <h2 class="page-title">Betöltési hiba</h2>
+                <div class="page-text">
+                  <p>Az oldal nem tölthető be: ${page.path}</p>
+                  <p>Hiba: ${error.message}</p>
+                </div>
+              </div>`;
           }
-        } catch (error) {
-          console.error(`Általános hiba:`, error);
-          pageElement.innerHTML = `
-            <div class="page-content error-page">
-              <h2 class="page-title">Hiba történt</h2>
-              <div class="page-text">
-                <p>Hiba: ${error.message}</p>
-              </div>
-            </div>`;
         }
         
         book.appendChild(pageElement);
         loadedCount++;
-        
-        // Kis szünet a terhelés elosztásához
         await new Promise(resolve => setTimeout(resolve, 50));
       }
-      
-      // Üres oldal hozzáadása a végére (opcionális)
-      const emptyPage = document.createElement('div');
-      emptyPage.className = 'page-wrapper';
-      emptyPage.innerHTML = `
-        <div class="page-content">
-          <h2 class="page-title">A kaland folytatódik...</h2>
-          <div class="page-text">
-            <p>Hamarosan új fejezetek várnak!</p>
-          </div>
-        </div>
-      `;
-      book.appendChild(emptyPage);
-      
-      return true;
     }
   </script>
 </body>
