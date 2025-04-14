@@ -45,49 +45,7 @@
       height: 100%;
     }
     
-    /* StPageFlip stílusok beágyazva */
-    .stf__parent {
-      position: relative;
-      display: block;
-      box-sizing: border-box;
-      transform: translateZ(0);
-      -ms-touch-action: pan-y;
-      touch-action: pan-y;
-    }
-
-    .sft__wrapper {
-      position: relative;
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    .stf__parent canvas {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      left: 0;
-      top: 0;
-    }
-
-    .stf__block {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      box-sizing: border-box;
-      perspective: 2000px;
-    }
-
-    .stf__item {
-      display: none;
-      position: absolute;
-      transform-style: preserve-3d;
-    }
-
-    .stf__outerShadow, .stf__innerShadow, .stf__hardShadow, .stf__hardInnerShadow {
-      position: absolute;
-      left: 0;
-      top: 0;
-    }
+   
     
     /* Vezérlők */
     .controls {
@@ -280,8 +238,6 @@
   </style>
 </head>
 <body>
-  <!-- Könyv konténer -->
-  <div id="book"></div>
   
   <!-- Kockadobás widgetek -->
   <button class="dice-toggle" onclick="toggleDiceWidget()" title="3 Kockás dobás" style="padding: 4px 6px;">
@@ -315,9 +271,83 @@
   <audio id="flipSound" src="sounds/pageturn-102978.mp3" preload="auto"></audio>
 
 
-  <!-- Kockadobás szkriptek -->
+  
+
   <script>
-    // 3 kockás widget funkciók
+    document.addEventListener('DOMContentLoaded', () => {
+  // CSAK EZEK MARADJANAK, EGYSZER:
+  let currentPage = 1;
+  const totalPages = 300;
+  const iframe = document.getElementById('book-page');
+  const pageIndicator = document.getElementById('page-indicator');
+  const flipSound = document.getElementById('flipSound');
+  const muteButton = document.getElementById('mute-button');
+  const fullscreenBtn = document.getElementById('fullscreen-button');
+
+  function updatePageIndicator() {
+    pageIndicator.textContent = `Oldal ${currentPage} / ${totalPages}`;
+  }
+
+  function goToPage(pageNumber) {
+    if (pageNumber < 1 || pageNumber > totalPages) return;
+    iframe.style.opacity = 0;
+    iframe.onload = () => {
+      iframe.style.opacity = 1;
+      updatePageIndicator();
+    };
+    iframe.src = `pages/${pageNumber}.html`;
+    currentPage = pageNumber;
+    if (!flipSound.muted) flipSound.play();
+  }
+
+  function nextPage() { goToPage(currentPage + 1); }
+  function prevPage() { goToPage(currentPage - 1); }
+
+  muteButton.addEventListener('click', () => {
+    flipSound.muted = !flipSound.muted;
+    muteButton.textContent = flipSound.muted ? '🔇' : '🔊';
+  });
+
+  function saveBookmark() {
+    localStorage.setItem('bookmark', currentPage);
+    alert(`Könyvjelző mentve: ${currentPage}. oldal`);
+  }
+
+  function loadBookmark() {
+    const savedPage = parseInt(localStorage.getItem('bookmark'), 10);
+    if (savedPage) goToPage(savedPage);
+    else alert('Nincs mentett könyvjelző!');
+  }
+
+  let zoomedIn = false;
+  function toggleZoom() {
+    zoomedIn = !zoomedIn;
+    iframe.style.transform = zoomedIn ? 'scale(1.5)' : 'scale(1)';
+  }
+
+  fullscreenBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  });
+
+  // Service Worker regisztráció a PWA-hoz
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(() => console.log('Service Worker regisztrálva'))
+      .catch(err => console.error('SW regisztráció hiba:', err));
+  }
+
+  // Oldaljelző frissítése induláskor
+  updatePageIndicator();
+	
+	
+	
+	
+  <!-- Kockadobás szkriptek -->
+	// 3 kockás widget funkciók
     function toggleDiceWidget() {
       const container = document.getElementById('dice-widget-container');
       if (container.style.display === 'none' || container.style.display === '') {
@@ -453,75 +483,7 @@
       img.style.height = '80px';
       diceContainer.appendChild(img);
     }
-  </script>
-
-  
-
-  <script>
-    // CSAK EZEK MARADJANAK, EGYSZER:
-    let currentPage = 1;
-    const totalPages = 300;
-    const iframe = document.getElementById('book-page');
-    const pageIndicator = document.getElementById('page-indicator');
-    const flipSound = document.getElementById('flipSound');
-    const muteButton = document.getElementById('mute-button');
-
-    function updatePageIndicator() {
-      pageIndicator.textContent = `Oldal ${currentPage} / ${totalPages}`;
-    }
-
-    function goToPage(pageNumber) {
-      if (pageNumber < 1 || pageNumber > totalPages) return;
-      iframe.style.opacity = 0;
-      iframe.onload = () => {
-        iframe.style.opacity = 1;
-        updatePageIndicator();
-      };
-      iframe.src = `pages/${pageNumber}.html`;
-      currentPage = pageNumber;
-      if (!flipSound.muted) flipSound.play();
-    }
-
-    function nextPage() { goToPage(currentPage + 1); }
-    function prevPage() { goToPage(currentPage - 1); }
-
-    muteButton.addEventListener('click', () => {
-      flipSound.muted = !flipSound.muted;
-      muteButton.textContent = flipSound.muted ? '🔇' : '🔊';
-    });
-
-    function saveBookmark() {
-      localStorage.setItem('bookmark', currentPage);
-      alert(`Könyvjelző mentve: ${currentPage}. oldal`);
-    }
-
-    function loadBookmark() {
-      const savedPage = parseInt(localStorage.getItem('bookmark'), 10);
-      if (savedPage) goToPage(savedPage);
-      else alert('Nincs mentett könyvjelző!');
-    }
-
-    let zoomedIn = false;
-    function toggleZoom() {
-      zoomedIn = !zoomedIn;
-      iframe.style.transform = zoomedIn ? 'scale(1.5)' : 'scale(1)';
-    }
-
-    document.getElementById('fullscreen-button').addEventListener('click', () => {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      } else {
-        document.exitFullscreen();
-      }
-    });
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js')
-        .then(() => console.log('Service Worker regisztrálva'))
-        .catch(err => console.error('SW regisztráció hiba:', err));
-    }
-
-    updatePageIndicator();
-  </script>
+  });
+</script>
 </body>
 </html>
