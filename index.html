@@ -491,8 +491,8 @@
       loadMixedPages(pages).then(() => {
         // Turn.js inicializálása
         $("#book").turn({
-          width: 1979,
-          height: 2800,
+          width: 800,
+          height: 600,
           autoCenter: true,
           display: 'single',    // Egyszerre egy oldal legyen látható
           acceleration: true,   // Hardveres gyorsítás
@@ -532,8 +532,8 @@
   const containerWidth = window.innerWidth;
   const containerHeight = window.innerHeight;
 
-  const width = Math.min(containerWidth * 0.9, 1979);
-  const height = Math.min(containerHeight * 0.9, 2800);
+  const width = Math.min(containerWidth * 0.9, 800);
+  const height = Math.min(containerHeight * 0.9, 600);
 
   $("#book").turn("size", width, height);
   $("#book").turn("center");
