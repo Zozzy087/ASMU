@@ -548,130 +548,162 @@
   <script src="js/page-flip.browser.js"></script>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const loadingElement = document.getElementById('loading');
-      const pageFlip = new St.PageFlip(document.getElementById("book"), {
-        size: "stretch",
-        minWidth: 300,
-        maxWidth: 1000,
-        minHeight: 400,
-        maxHeight: 1400,
-        width: 640,
-        height: 900,
-        maxShadowOpacity: 0.7,
-        flippingTime: 850,
-        mobileScrollSupport: true,
-        swipeDistance: 40,
-        showCover: false,
-        usePortrait: window.innerWidth < 768,
-        clickEventForward: false,
-        acceleration: true
-      });
+  document.addEventListener("DOMContentLoaded", function () {
+    const loadingText = document.getElementById('loading-text');
 
-      const pages = [
-        { type: 'html', path: 'pages/oldal-0.html' },
-        { type: 'html', path: 'pages/oldal-1.html' },
-        { type: 'html', path: 'pages/oldal-2.html' },
-        { type: 'html', path: 'pages/oldal-3.html' },
-        { type: 'html', path: 'pages/oldal-4.html' },
-        { type: 'html', path: 'pages/oldal-5.html' },
-        { type: 'html', path: 'pages/oldal-6.html' },
-        { type: 'html', path: 'pages/oldal-7.html' },
-        { type: 'html', path: 'pages/oldal-8.html' },
-        { type: 'html', path: 'pages/oldal-9.html' }
-      ];
-
-      // Optimalizált lapbetöltés
-      const loadPages = async () => {
-        try {
-          const pageElements = await Promise.all(pages.map(async (page, index) => {
-            const element = document.createElement('div');
-            element.className = 'page';
-            
-            if(page.type === 'html') {
-              const response = await fetch(page.path);
-              if(!response.ok) throw new Error(`HTTP ${response.status}`);
-              element.innerHTML = await response.text();
-            }
-            
-            element.querySelectorAll('[data-page]').forEach(link => {
-              link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetPage = parseInt(link.dataset.page);
-                if(!isNaN(targetPage)) pageFlip.flip(targetPage);
-              });
-            });
-            
-            return element;
-          });
-          
-          pageFlip.loadFromHTML(pageElements);
-          pageFlip.update();
-          loadingElement.style.display = 'none';
-        } catch(error) {
-          console.error('Betöltési hiba:', error);
-          loadingElement.innerHTML = `<div class="error">Hiba történt: ${error.message}</div>`;
-        }
-      };
-
-      // Interakció kezelés
-      const handleInteraction = () => {
-        let touchStartX = 0;
-        let isDragging = false;
-
-        // Touch események
-        document.addEventListener('touchstart', e => {
-          touchStartX = e.touches[0].clientX;
-          isDragging = true;
-        }, { passive: true });
-
-        document.addEventListener('touchmove', e => {
-          if(!isDragging) return;
-          const deltaX = e.touches[0].clientX - touchStartX;
-          if(Math.abs(deltaX) > 30) {
-            pageFlip.flip(deltaX > 0 ? pageFlip.getCurrentPageIndex() - 1 : pageFlip.getCurrentPageIndex() + 1);
-            isDragging = false;
-          }
-        }, { passive: true });
-
-        // Egér események
-        let mouseDownX = 0;
-        document.addEventListener('mousedown', e => {
-          mouseDownX = e.clientX;
-          isDragging = true;
-        });
-
-        document.addEventListener('mousemove', e => {
-          if(!isDragging) return;
-          const deltaX = e.clientX - mouseDownX;
-          if(Math.abs(deltaX) > 50) {
-            pageFlip.flip(deltaX > 0 ? pageFlip.getCurrentPageIndex() - 1 : pageFlip.getCurrentPageIndex() + 1);
-            isDragging = false;
-          }
-        });
-
-        document.addEventListener('mouseup', () => isDragging = false);
-      };
-
-      // Események inicializálása
-      pageFlip.on('flip', e => {
-        document.getElementById('page-indicator').textContent = `Oldal ${e.data + 1} / ${pageFlip.getPageCount()}`;
-        document.getElementById('flipSound').play().catch(() => {});
-      });
-
-      window.addEventListener('resize', () => {
-        pageFlip.updateSize();
-        pageFlip.update();
-      });
-
-      document.addEventListener('keydown', e => {
-        if(e.key === 'ArrowLeft') pageFlip.flipPrev();
-        if(e.key === 'ArrowRight') pageFlip.flipNext();
-      });
-
-      // Indítás
-      loadPages().then(handleInteraction);
+    const pageFlip = new St.PageFlip(document.getElementById("book"), {
+      size: "stretch",
+      minWidth: 300,
+      maxWidth: 1000,
+      minHeight: 400,
+      maxHeight: 1400,
+      width: 640,
+      height: 900,
+      maxShadowOpacity: 0.5,
+      showCover: false,
+      mobileScrollSupport: true,
+      flippingTime: 1000,
+      usePortrait: true,
+      drawShadow: true,
+      startZIndex: 5,
+      autoSize: true,
+      clickEventForward: true
     });
+
+    const pages = [
+      { type: 'image', path: 'images/oldalak/borito.webp' },
+      { type: 'html', path: 'pages/oldal-1.html' },
+      { type: 'html', path: 'pages/oldal-2.html' },
+      { type: 'html', path: 'pages/oldal-3.html' },
+      { type: 'html', path: 'pages/oldal-4.html' },
+      { type: 'html', path: 'pages/oldal-5.html' },
+      { type: 'html', path: 'pages/oldal-6.html' },
+      { type: 'html', path: 'pages/oldal-7.html' },
+      { type: 'html', path: 'pages/oldal-8.html' },
+      { type: 'html', path: 'pages/oldal-9.html' }
+    ];
+
+    setTimeout(() => pageFlip.update(), 100);
+
+    loadMixedPages(pages, pageFlip).then(() => {
+      console.log("Könyv sikeresen betöltve");
+    }).catch(error => {
+      console.error("Hiba a könyv betöltésekor:", error);
+    });
+
+    const flipSound = document.getElementById("flipSound");
+    const fullscreenBtn = document.getElementById("fullscreen-button");
+    const pageIndicator = document.getElementById("page-indicator");
+    const muteButton = document.getElementById("mute-button");
+
+    let isMuted = false;
+
+    muteButton.addEventListener("click", () => {
+      isMuted = !isMuted;
+      muteButton.textContent = isMuted ? "🔇" : "🔊";
+    });
+
+    fullscreenBtn.addEventListener("click", () => {
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) elem.requestFullscreen();
+      else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+      else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+    });
+
+    document.addEventListener("fullscreenchange", () => {
+      fullscreenBtn.style.display = document.fullscreenElement ? "none" : "block";
+    });
+
+    pageFlip.on('init', () => {
+      document.getElementById('loading').style.display = 'none';
+      pageIndicator.textContent = `Oldal 1 / ${pageFlip.getPageCount()}`;
+      handlePageLinks(pageFlip);
+    });
+
+    pageFlip.on('flip', (e) => {
+      if (!isMuted) {
+        flipSound.currentTime = 0;
+        flipSound.play().catch(e => console.log("Hang hiba:", e));
+      }
+      pageIndicator.textContent = `Oldal ${e.data + 1} / ${pageFlip.getPageCount()}`;
+      fullscreenBtn.style.display = e.data === 0 ? "block" : "none";
+      setTimeout(() => handlePageLinks(pageFlip), 100);
+    });
+
+    pageFlip.on('changeOrientation', () => {
+      pageFlip.update();
+    });
+
+    window.addEventListener('resize', () => {
+      pageFlip.update();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') pageFlip.flipNext();
+      else if (e.key === 'ArrowLeft') pageFlip.flipPrev();
+    });
+  });
+
+  async function loadMixedPages(pages, pageFlip) {
+    const pageElements = [];
+    const totalPages = pages.length;
+    let loadedCount = 0;
+    const loadingText = document.getElementById('loading-text');
+
+    for (const page of pages) {
+      try {
+        loadingText.textContent = `Betöltés: ${loadedCount + 1}/${totalPages}`;
+        const pageElement = document.createElement('div');
+        pageElement.className = 'page';
+
+        if (page.type === 'image') {
+          const img = document.createElement('img');
+          img.src = page.path;
+          img.className = 'cover-image';
+          img.alt = 'Oldalkép';
+          pageElement.appendChild(img);
+        } else if (page.type === 'html') {
+          try {
+            const response = await fetch(page.path);
+            if (!response.ok) throw new Error(`HTTP hiba: ${response.status}`);
+            const html = await response.text();
+            pageElement.innerHTML = html;
+          } catch (error) {
+            console.error(`Hiba a HTML oldal betöltésénél: ${page.path}`, error);
+            pageElement.innerHTML = `
+              <div class="page-content">
+                <h2 class="page-title">Betöltési hiba</h2>
+                <div class="page-text">
+                  <p>Az oldal nem tölthető be: ${page.path}</p>
+                  <p>Hiba: ${error.message}</p>
+                </div>
+              </div>`;
+          }
+        }
+
+        pageElements.push(pageElement);
+        loadedCount++;
+        await new Promise(resolve => setTimeout(resolve, 100));
+      } catch (error) {
+        console.error('Általános hiba oldal betöltésekor:', error);
+      }
+    }
+
+    pageFlip.loadFromHTML(pageElements);
+    return pageFlip;
+  }
+
+  function handlePageLinks(pageFlip) {
+    document.querySelectorAll('[data-page]').forEach(link => {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetPage = parseInt(this.getAttribute('data-page'));
+        if (!isNaN(targetPage)) {
+          pageFlip.flip(targetPage - 1);
+        }
+      });
+    });
+  }
 </script>
 
 
