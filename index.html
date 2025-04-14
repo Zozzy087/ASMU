@@ -250,7 +250,7 @@
     
     .turn-page {
   background-color: #f9f7e8;
-  transition: transform 3.8s ease, left 3.8s ease; /* lassabb lapozás */
+  transition: transform 2.8s ease, left 2.8s ease; /* lassabb lapozás */
 }
 
     
@@ -272,6 +272,12 @@
   overflow: auto;
 }
 
+#book .page-wrapper,
+#book .turn-page,
+#book .turn-page.animated {
+  transition: transform 2.8s ease-in-out !important;
+  will-change: transform;
+}
 
   </style>
 </head>
