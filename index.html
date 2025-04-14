@@ -136,13 +136,15 @@
     
     /* Kép háttér beállítása */
     .cover-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  object-fit: cover;
+  position: relative;
+  display: block;
+  margin: 0 auto;
+}
+
     
     /* Borító és utolsó oldal stílusai */
     .hard-cover {
@@ -359,6 +361,78 @@
     .stf__wrapper {
       perspective: 2000px;
     }
+	
+
+/* Reszponzív oldaltartalom - módosítások */
+.page-content {
+  padding: 5%; /* Adaptív padding, a meglévő 40px helyett */
+  /* A többi meglévő beállítás marad */
+}
+
+/* Adaptív szövegméret */
+.page-title {
+  font-size: clamp(16px, 5vw, 28px);
+  margin-bottom: clamp(15px, 4vw, 30px);
+}
+
+.page-text {
+  font-size: clamp(14px, 3vw, 18px);
+}
+
+/* Adaptív borítókép */
+.cover-image {
+  object-fit: contain; /* 'cover' helyett 'contain' */
+  max-height: 100%;
+  max-width: 100%;
+}
+
+/* Media query-k különböző eszközökhöz */
+@media (max-width: 480px) {
+  /* Mobiltelefon */
+  .page-content {
+    padding: 15px;
+  }
+  .page-title {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  .page-text {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  /* Tablet */
+  .page-content {
+    padding: 20px;
+  }
+  .page-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  .page-text {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Desktop */
+  .page-content {
+    padding: 30px 40px;
+  }
+}
+
+/* StPageFlip beállítások felülírása a jobb megjelenítéshez */
+.stf__parent {
+  margin: 0 auto;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.stf__block {
+  box-sizing: border-box;
+}
+	
   </style>
 </head>
 <body>
