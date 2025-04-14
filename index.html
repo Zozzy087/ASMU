@@ -359,6 +359,79 @@
     .stf__wrapper {
       perspective: 2000px;
     }
+	
+	/* Ezeket a CSS részeket add hozzá a meglévő stílusokhoz a </style> tag előtt */
+
+/* Reszponzív oldaltartalom - módosítások */
+.page-content {
+  padding: 5%; /* Adaptív padding, a meglévő 40px helyett */
+  /* A többi meglévő beállítás marad */
+}
+
+/* Adaptív szövegméret */
+.page-title {
+  font-size: clamp(16px, 5vw, 28px);
+  margin-bottom: clamp(15px, 4vw, 30px);
+}
+
+.page-text {
+  font-size: clamp(14px, 3vw, 18px);
+}
+
+/* Adaptív borítókép */
+.cover-image {
+  object-fit: contain; /* 'cover' helyett 'contain' */
+  max-height: 100%;
+  max-width: 100%;
+}
+
+/* Media query-k különböző eszközökhöz */
+@media (max-width: 480px) {
+  /* Mobiltelefon */
+  .page-content {
+    padding: 15px;
+  }
+  .page-title {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  .page-text {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  /* Tablet */
+  .page-content {
+    padding: 20px;
+  }
+  .page-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  .page-text {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Desktop */
+  .page-content {
+    padding: 30px 40px;
+  }
+}
+
+/* StPageFlip beállítások felülírása a jobb megjelenítéshez */
+.stf__parent {
+  margin: 0 auto;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.stf__block {
+  box-sizing: border-box;
+}
+	
   </style>
 </head>
 <body>
@@ -550,23 +623,27 @@
       
       // PageFlip inicializálása a javított animációs paraméterekkel
       const pageFlip = new St.PageFlip(document.getElementById("book"), {
-        width: "100%",
-        height: "100%",
-        size: "stretch",
-        minWidth: 320,
-        maxWidth: "100%",
-        minHeight: 400,
-        maxHeight: "100%",
-        maxShadowOpacity: 0.5,
-        showCover: true,       // Ezt engedélyezzük a borítónak
-        mobileScrollSupport: false, 
-        flippingTime: 1000,    // Optimalizált idő
-        usePortrait: true,
-        drawShadow: true,
-        startZIndex: 5,        // Magasabb z-index a jobb rendereléshez
-        autoSize: true,
-        clickEventForward: true
-      });
+  // Automatikus méretezés a képernyőhöz
+  size: "stretch",
+  // Minimális és maximális méretek
+  minWidth: 300,
+  maxWidth: 1000,
+  minHeight: 400,
+  maxHeight: 1400,
+  // Arány megtartása
+  width: 640,
+  height: 900,
+  // További paraméterek
+  maxShadowOpacity: 0.5,
+  showCover: true,
+  mobileScrollSupport: false,
+  flippingTime: 1000,
+  usePortrait: true,
+  drawShadow: true,
+  startZIndex: 5,
+  autoSize: true,
+  clickEventForward: true
+});
       
       // Oldalak definíciója - konzisztensebb kezelés a borítóra és utolsó oldalra
       const pages = [
@@ -593,12 +670,15 @@
         }
       ];
       
-      // Oldalak betöltése és a könyv inicializálása
-      loadMixedPages(pages, pageFlip).then(() => {
-        console.log("Könyv sikeresen betöltve");
-      }).catch(error => {
-        console.error("Hiba a könyv betöltésekor:", error);
-      });
+      // Kezdeti frissítés, hogy biztosan jó mérettel induljon
+setTimeout(() => pageFlip.update(), 100);
+
+// Oldalak betöltése és a könyv inicializálása
+loadMixedPages(pages, pageFlip).then(() => {
+  console.log("Könyv sikeresen betöltve");
+}).catch(error => {
+  console.error("Hiba a könyv betöltésekor:", error);
+});
       
       // Események és vezérlők beállítása
       const flipSound = document.getElementById("flipSound");
