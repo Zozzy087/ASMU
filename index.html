@@ -640,28 +640,10 @@
         drawShadow: true        // árnyék rajzolása
       });
       
-      // Átmeneti oldalbetöltés indikátor hozzáadása
-      loadingText.textContent = "Oldalak betöltése...";
-
-      // Két megközelítés kombinálása - meglévő képek betöltése, majd fokozatos áttérés HTML-re
-      // Ez lehetővé teszi a fokozatos áttérést a HTML oldalakra
       
-      // 1. Képek betöltése az azonnali induláshoz
-      const initialImages = [
-        "images/oldalak/borito.webp",
-        "images/oldalak/elso-oldal.webp",
-        "images/oldalak/masodik-oldal.webp",
-        "images/oldalak/harmadik-oldal.webp",
-        "images/oldalak/negyedik-oldal.webp",
-        "images/oldalak/otodik-oldal.webp",
-        "images/oldalak/hatodik-oldal.webp",
-        "images/oldalak/hetedik-oldal.webp",
-        "images/oldalak/nyolcadik-oldal.webp",
-        "images/oldalak/kilencedik-oldal.webp"
-      ];
       
       // Képek betöltése a PageFlip-be
-      pageFlip.loadFromImages(initialImages);
+      pageFlip.loadFromHtml(htmlPages);
       
       // HTML oldalakhoz való felkészülés - ez csak egy példa, hogyan lehet átállni
       // Valós használatban ezeket a HTML oldalakat kellene létrehozni
