@@ -367,6 +367,19 @@
       left: 0;
       top: 0;
     }
+	
+	/* Force portrait mód minden képernyőn */
+.force-portrait .stf__block {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Lap szélesség beállítása */
+.page {
+  max-width: 100%;
+  width: 100% !important;
+  height: 100% !important;
+}
   </style>
 </head>
 <body>
@@ -549,25 +562,65 @@
 
   <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const pageFlip = new St.PageFlip(document.getElementById("book"), {
-  width: 640,
-  height: 900,
-  size: "stretch",
-  minWidth: 320,
-  maxWidth: 1200,
-  minHeight: 400,
-  maxHeight: 1400,
-  maxShadowOpacity: 0.5,
-  showCover: false,
-  mobileScrollSupport: true,
-  flippingTime: 1000,
-  drawShadow: true,
-  autoSize: true,
-  startZIndex: 5,
-  usePortrait: true,
-  mode: "single" // 🔥 EZ AZ, AMI MEGOLDJA!
+    // A PageFlip inicializáló blokkban a következő változtatásokat végezd el
+// Hívd meg ezt a funkciót minden esemény után és oldal változáskor
+function enforcePortraitMode() {
+  const rect = pageFlip.getBoundsRect ? pageFlip.getBoundsRect() : 
+    document.getElementById('book').getBoundingClientRect();
+  
+  // Stílus beállítása a StPageFlip alapkonténerén
+  const stfBlocks = document.querySelectorAll('.stf__block');
+  if (stfBlocks.length > 0) {
+    stfBlocks.forEach(block => {
+      block.style.maxWidth = '800px';
+      block.style.margin = '0 auto';
+    });
+  }
+  
+  // Beállítjuk az oldalak láthatóságát
+  const pages = document.querySelectorAll('.page');
+  if (pages.length > 0) {
+    pages.forEach((page, index) => {
+      if (index === pageFlip.getCurrentPageIndex()) {
+        page.style.display = 'block';
+      } else {
+        page.style.display = 'none';
+      }
+    });
+  }
+}
+
+// Hívd meg a funkciót induláskor és minden oldalváltozáskor
+pageFlip.on('flip', () => {
+  setTimeout(enforcePortraitMode, 100);
 });
 
+pageFlip.on('init', () => {
+  setTimeout(enforcePortraitMode, 100);
+});
+
+// Orientáció kezelés - ezt add hozzá a PageFlip inicializálást követően
+pageFlip.on('changeOrientation', (e) => {
+  // Megbizonyosodunk, hogy portrait módban vagyunk
+  if (e.data !== 'portrait') {
+    pageFlip.turnToPortrait();
+  }
+});
+
+// És add hozzá ezt a segédfunkciót, ami biztosítja hogy mindig portrait módban leszünk
+function ensurePortraitMode() {
+  const container = document.getElementById("book");
+  container.classList.add('force-portrait');
+  
+  // Bizonyosodj meg róla, hogy mindig csak egy oldal látszódjon
+  if (pageFlip && pageFlip.getOrientation && pageFlip.getOrientation() !== 'portrait') {
+    setTimeout(() => pageFlip.turnToPortrait(), 200);
+  }
+}
+
+// Hívd meg induláskor és ablakméret változáskor is
+ensurePortraitMode();
+window.addEventListener('resize', ensurePortraitMode);
 
     const pages = [
       { type: 'image', path: 'images/oldalak/borito.webp' },
