@@ -1640,7 +1640,7 @@ flipMethods = {
 
 				var that = this, point = (data.point && data.point.corner==c.corner) ? data.point : flipMethods._c.call(this, c.corner, 1);
 			
-				this.animatef({from: [point.x, point.y], to:[c.x, c.y], duration: 500, frame: function(v) {
+				this.animatef({from: [point.x, point.y], to:[c.x, c.y], duration: 1600, frame: function(v) {
 					c.x = Math.round(v[0]);
 					c.y = Math.round(v[1]);
 					flipMethods._fold.call(that, c);
