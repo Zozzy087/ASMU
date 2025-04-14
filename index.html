@@ -563,41 +563,55 @@
   <script>
   document.addEventListener("DOMContentLoaded", function () {
     // A PageFlip inicializáló blokkban a következő változtatásokat végezd el
-// Hívd meg ezt a funkciót minden esemény után és oldal változáskor
-function enforcePortraitMode() {
-  const rect = pageFlip.getBoundsRect ? pageFlip.getBoundsRect() : 
-    document.getElementById('book').getBoundingClientRect();
-  
-  // Stílus beállítása a StPageFlip alapkonténerén
-  const stfBlocks = document.querySelectorAll('.stf__block');
-  if (stfBlocks.length > 0) {
-    stfBlocks.forEach(block => {
-      block.style.maxWidth = '800px';
-      block.style.margin = '0 auto';
-    });
-  }
-  
-  // Beállítjuk az oldalak láthatóságát
-  const pages = document.querySelectorAll('.page');
-  if (pages.length > 0) {
-    pages.forEach((page, index) => {
-      if (index === pageFlip.getCurrentPageIndex()) {
-        page.style.display = 'block';
-      } else {
-        page.style.display = 'none';
-      }
-    });
-  }
+const pageFlip = new St.PageFlip(document.getElementById("book"), {
+  size: "stretch",
+  minWidth: 300,
+  maxWidth: 1200,       // Növeltem a maximális szélességet
+  minHeight: 400,
+  maxHeight: 1400,
+  width: 800,           // Szélesebb alapméret
+  height: 900,
+  maxShadowOpacity: 0.5,
+  showCover: false,     // Így nincs különleges kezelés a borítónak
+  mobileScrollSupport: true,
+  flippingTime: 1000,
+  usePortrait: true,    // Fontos, ez biztosítja, hogy mindig csak egy oldal látszódjon!
+  forceSinglePage: true, // Új paraméter! Ez kényszeríti, hogy mindig csak egy oldal jelenjen meg
+  drawShadow: true,
+  startZIndex: 5,
+  autoSize: true,
+  clickEventForward: true
+});
+
+// Helyezd ezt a script blokkba a DOM betöltés után
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(registration => {
+        console.log('Service Worker sikeresen regisztrálva:', registration.scope);
+        
+        // Frissítések kezelése
+        registration.onupdatefound = () => {
+          const installingWorker = registration.installing;
+          if (installingWorker == null) return;
+          
+          installingWorker.onstatechange = () => {
+            if (installingWorker.state === 'installed') {
+              if (navigator.serviceWorker.controller) {
+                console.log('Új tartalom érhető el, kérlek frissítsd az oldalt.');
+              } else {
+                console.log('Tartalom gyorsítótárazva offline használathoz.');
+              }
+            }
+          };
+        };
+      })
+      .catch(error => {
+        console.error('Service Worker regisztrációs hiba:', error);
+      });
+  });
 }
 
-// Hívd meg a funkciót induláskor és minden oldalváltozáskor
-pageFlip.on('flip', () => {
-  setTimeout(enforcePortraitMode, 100);
-});
-
-pageFlip.on('init', () => {
-  setTimeout(enforcePortraitMode, 100);
-});
 
 // Orientáció kezelés - ezt add hozzá a PageFlip inicializálást követően
 pageFlip.on('changeOrientation', (e) => {
