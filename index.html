@@ -47,56 +47,6 @@
       position: relative;
     }
     
-    /* Kockadobás widget pozíciók */
-    #dice-widget-container {
-      position: fixed;
-      bottom: 160px;
-      right: 20px;
-    }
-    
-    #single-dice-widget-container {
-      position: fixed;
-      bottom: 80px;
-      right: 20px;
-    }
-    
-    /* Kockadobás gombok */
-    .dice-toggle {
-      position: fixed;
-      bottom: 20px; 
-      right: 20px;
-      z-index: 1000;
-      width: 50px;
-      height: 50px;
-      background: #7f00ff;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .single-dice-toggle {
-      position: fixed;
-      bottom: 20px;
-      right: 80px;
-      z-index: 1000;
-      width: 50px;
-      height: 50px;
-      background: #7f00ff;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
     /* Betöltő képernyő */
     #loading-screen {
       position: fixed;
@@ -124,7 +74,6 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-	
   </style>
 </head>
 <body>
@@ -138,79 +87,37 @@
     <!-- A FlipbookEngine ide fogja beilleszteni az iframe-eket -->
   </div>
   
-  <!-- Kockadobó gombok -->
-  <button id="dice-button" class="dice-toggle" title="3 Kockás dobás" style="padding: 4px 6px;">
-    <span style="font-size: 15px;">🎲🎲🎲</span>
-  </button>
-  <div id="dice-widget-container"></div>
-  
-  <button id="single-dice-button" class="single-dice-toggle" title="1 Kockás dobás" style="padding: 4px 6px;">
-    <span style="font-size: 15px;">🎲</span>
-  </button>
-  <div id="single-dice-widget-container"></div>
-  
   <!-- Hangok -->
   <audio id="flip-sound" src="sounds/pageturn-102978.mp3" preload="auto"></audio>
 
   <!-- TypeScript-ből fordított JavaScript -->
-
-<script src="flipbook-engine.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    try {
-      // Betöltő képernyő
-      const loadingScreen = document.getElementById('loading-screen');
-      if (loadingScreen) {
-        setTimeout(() => {
-          loadingScreen.style.opacity = '0';
+  <script src="flipbook-engine.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        // Betöltő képernyő
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
           setTimeout(() => {
-            loadingScreen.style.display = 'none';
-          }, 500);
-        }, 800);
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+              loadingScreen.style.display = 'none';
+            }, 500);
+          }, 800);
+        }
+        
+        // FlipbookEngine inicializálása
+        const flipbook = new FlipbookEngine({
+          containerId: 'book-container',
+          totalPages: 300,
+          soundPath: 'sounds/pageturn-102978.mp3'
+        });
+        
+        console.log('Minden sikeresen inicializálva');
+      } catch (error) {
+        console.error('Hiba:', error);
       }
-      
-      // FlipbookEngine inicializálása
-      const flipbook = new FlipbookEngine({
-        containerId: 'book-container',
-        totalPages: 300,
-        soundPath: 'sounds/pageturn-102978.mp3'
-      });
-      
-      // Kockadobó widgetek inicializálása
-      const combatDiceWidget = new DiceWidget({
-        containerId: 'dice-widget-container',
-        numDice: 3,
-        title: 'Harci Kockadobás',
-        buttonText: 'Dobás',
-        successValue: 4
-      });
-      
-      document.getElementById('dice-button').addEventListener('click', () => {
-        document.getElementById('single-dice-widget-container').style.display = 'none';
-        combatDiceWidget.toggle();
-      });
-      
-      const simpleDiceWidget = new DiceWidget({
-        containerId: 'single-dice-widget-container',
-        numDice: 1,
-        title: '1D6 Kockadobás'
-      });
-      
-      document.getElementById('single-dice-button').addEventListener('click', () => {
-        document.getElementById('dice-widget-container').style.display = 'none';
-        simpleDiceWidget.toggle();
-      });
-      
-      console.log('Minden sikeresen inicializálva');
-    } catch (error) {
-      console.error('Hiba:', error);
-    }
-  });
-</script>
-<meta name="theme-color" content="#000000">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    });
+  </script>
 </body>
 </html>
