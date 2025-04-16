@@ -2,20 +2,21 @@
 body {
   color: white;
   background-color: #000000;
-  font-family: 'Blogger Sans', bold;
+  font-family: 'Aptos', bold;
+  font-size: 28px;
   margin: 0;
   padding: 0;
 }
 
 .page-content {
-  max-width: 800px;
-  margin: 40px auto;
+  max-width: auto;
+  margin: auto;
   padding: 20px;
 }
 
 .page-title {
   color: #e0e0e0;
-  font-size: 28px;
+  font-size: 48px;
   margin-bottom: 20px;
   text-align: center;
   border-bottom: 1px solid #7f00ff;
