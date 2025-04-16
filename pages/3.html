@@ -1,80 +1,73 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-  <style><head>
-  <style><head>
-  <style></style>
-  
+<html>
+<head>
   <meta charset="UTF-8">
-
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Oldal címe</title>
-
-  
   
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&amp;display=swap" rel="stylesheet">
-
-  
   <link rel="stylesheet" href="../common-styles.css">
-<style>
-#dice-widget-container {
-  position: relative; 
-  z-index: 1000;
-  background: rgba(0, 0, 0, 0.8);
-  border-radius: 10px;
-  padding: 10px;
-  display: none;
-
-}
-
-.dice-toggle {
-  position: relative; 
-  z-index: 1000;
-  width: 50px;
-  height: 50px;
-  background: #7f00ff;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   
-}
-.dice-results {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 20px;
-}
-#success-results {
-  background: black;
-  color: white;
-  display: inline-block;
-  padding: 5px 10px;
-  border-radius: 5px;
-  margin-top: 10px;
-  font-size: 1.2rem;
-}
-.dice-button {
-  padding: 10px 20px;
-  margin-top: 10px;
-  background: #7f00ff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  box-shadow: 0 0 10px rgba(127, 0, 255, 0.5);
-}
+  <style>
+    #dice-widget-container {
+      position: relative; 
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 10px;
+      padding: 10px;
+      display: none;
+    }
 
-.dice-button:hover {
-  background: #a020f0;
-  transform: scale(1.05);
-}
-</style>
+    .dice-toggle {
+      position: relative; 
+      z-index: 1000;
+      width: 50px;
+      height: 50px;
+      background: #7f00ff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .dice-results {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    #success-results {
+      background: black;
+      color: white;
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+      font-size: 1.2rem;
+    }
+    
+    .dice-button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      background: #7f00ff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(127, 0, 255, 0.5);
+    }
+
+    .dice-button:hover {
+      background: #a020f0;
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 <body>
 
@@ -101,13 +94,17 @@ végre az akcióidat.</p>
 </p>
 </div>
 </div>
+
 <script>
     // 3 kockás widget funkciók
     function toggleDiceWidget() {
       const container = document.getElementById('dice-widget-container');
       if (container.style.display === 'none' || container.style.display === '') {
-        // Másik widget elrejtése, ha látszik
-        document.getElementById('single-dice-widget-container').style.display = 'none';
+        // Ellenőrizzük, hogy létezik-e a single-dice-widget-container
+        const singleDiceContainer = document.getElementById('single-dice-widget-container');
+        if (singleDiceContainer) {
+          singleDiceContainer.style.display = 'none';
+        }
         
         container.style.display = 'block';
         showDiceRoll();
@@ -183,7 +180,6 @@ végre az akcióidat.</p>
 
       successResults.textContent = successText;
     }
-	 });
 </script>
 
 </body>
