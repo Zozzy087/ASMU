@@ -1,0 +1,78 @@
+/* common-styles.css */
+body {
+  color: white;
+  background-color: #323232;
+  font-family: 'Cinzel', serif;
+  margin: 0;
+  padding: 0;
+}
+
+.page-content {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.page-title {
+  color: #e0e0e0;
+  font-size: 28px;
+  margin-bottom: 20px;
+  text-align: center;
+  border-bottom: 1px solid #7f00ff;
+  padding-bottom: 10px;
+}
+
+.page-text {
+  line-height: 1.8;
+  margin-bottom: 30px;
+}
+
+.page-text p {
+  margin-bottom: 15px;
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.choices a {
+  color: #7f00ff;
+  text-decoration: none;
+  background-color: rgba(127, 0, 255, 0.1);
+  padding: 12px 15px;
+  border-radius: 5px;
+  transition: background-color 0.3s, transform 0.2s;
+  cursor: pointer;
+}
+
+.choices a:hover {
+  background-color: rgba(127, 0, 255, 0.3);
+  transform: translateX(5px);
+}
+
+.page-number {
+  text-align: center;
+  margin-top: 30px;
+  color: #aaaaaa;
+  font-size: 14px;
+}
+
+/* Gomb stílusok */
+button {
+  background-color: #7f00ff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  margin: 5px;
+}
+
+button:hover {
+  background-color: #9933ff;
+}
+

@@ -1,0 +1,27 @@
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oldal címe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../common-styles.css">
+</head>
+<h2>Prológus</h2>
+
+  </div>
+
+  <p>Üdvözöllek, kalandor, ki a sötétség ösvényeit választotta! Készen állsz arra, hogy belépj Elevron sötét varázslatokkal és ősi átkokkal teli birodalmába? Persze, hogy készen állsz – különben nem lennél itt...</p>
+
+  <p>Ez nem a gyávák birodalma, s nem is azoké, akik csak a könnyű utat választják. Csakis a merészek, a vakmerők és a bátrak léphetnek erre az útra. Te talán az vagy? Húzd szorosabbra magadon a köpönyeged, élesítsd az elméd és szorítsd ökölbe a varázslataid formálta hatalom kulcsait...</p>
+
+  <p>Most csukd be a szemed, és képzeld el, hogy te vagy <strong>Kragorn</strong>, az árnyak között rejtőző sötét varázsló...</p>
+
+  <!-- (folytatódik a teljes szöveggel – javasolt tördelni logikailag több <p>-be) -->
+
+<div class="choices">
+
+  <button class="choice-button" data-target="2">Meghallgatod az idegen ajánlatát. (lapozz a 2. oldalra)</button>
+
+  <button class="choice-button" data-target="3">Udvariasan visszautasítod és távozol. (lapozz a 3. oldalra)</button>
+
+</div>
+
