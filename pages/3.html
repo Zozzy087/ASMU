@@ -16,6 +16,7 @@
 
   
   <link rel="stylesheet" href="../common-styles.css">
+<style>
 #dice-widget-container {
   position: relative; 
   z-index: 1000;
@@ -42,6 +43,38 @@
   justify-content: center;
   
 }
+.dice-results {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+#success-results {
+  background: black;
+  color: white;
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+  font-size: 1.2rem;
+}
+.dice-button {
+  padding: 10px 20px;
+  margin-top: 10px;
+  background: #7f00ff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(127, 0, 255, 0.5);
+}
+
+.dice-button:hover {
+  background: #a020f0;
+  transform: scale(1.05);
+}
+</style>
 </head>
 <body>
 
