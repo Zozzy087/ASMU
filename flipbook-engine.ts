@@ -16,8 +16,6 @@ class FlipbookEngine {
   private currentPage: number = 0;
   private totalPages: number = 300;
   private isAnimating: boolean = false;
-  private isZoomed: boolean = false;
-  private zoomLevel: number = 1.0;
   private isMuted: boolean = false;
   
   // Navigáció vezérlők
@@ -184,21 +182,6 @@ class FlipbookEngine {
     loadButton.title = 'Könyvjelző betöltése';
     loadButton.addEventListener('click', () => this.loadBookmark());
     
-    // Zoom gomb
-    const zoomButton = document.createElement('button');
-    zoomButton.className = 'control-button zoom';
-    zoomButton.innerHTML = '🔍';
-    zoomButton.style.width = '40px';
-    zoomButton.style.height = '40px';
-    zoomButton.style.borderRadius = '50%';
-    zoomButton.style.border = 'none';
-    zoomButton.style.backgroundColor = '#7f00ff';
-    zoomButton.style.color = 'white';
-    zoomButton.style.fontSize = '20px';
-    zoomButton.style.cursor = 'pointer';
-    zoomButton.title = 'Nagyítás';
-    zoomButton.addEventListener('click', () => this.toggleZoom());
-    
     // Teljes képernyő gomb
     const fullscreenButton = document.createElement('button');
     fullscreenButton.className = 'control-button fullscreen';
@@ -232,7 +215,6 @@ class FlipbookEngine {
     // Gombok hozzáadása a vezérlő konténerhez
     controlsContainer.appendChild(saveButton);
     controlsContainer.appendChild(loadButton);
-    controlsContainer.appendChild(zoomButton);
     controlsContainer.appendChild(fullscreenButton);
     controlsContainer.appendChild(muteButton);
     
@@ -261,8 +243,6 @@ class FlipbookEngine {
         this.nextPage();
       } else if (e.key === 'f' || e.key === 'F') {
         this.toggleFullscreen();
-      } else if (e.key === 'z' || e.key === 'Z') {
-        this.toggleZoom();
       }
     });
     
@@ -506,128 +486,6 @@ class FlipbookEngine {
   }
   
   /**
-   * Nagyítás be/ki kapcsolása
-   */
-  public toggleZoom(): void {
-    if (!this.currentPageElement) return;
-    
-    this.isZoomed = !this.isZoomed;
-    
-    if (this.isZoomed) {
-      this.zoomLevel = 1.5;
-      this.currentPageElement.style.transform = `scale(${this.zoomLevel})`;
-      this.enablePanZoom();
-    } else {
-      this.zoomLevel = 1.0;
-      this.currentPageElement.style.transform = 'scale(1)';
-      this.disablePanZoom();
-    }
-  }
-  
-  /**
-   * Nagyítás esetén pásztázás engedélyezése
-   */
-  private enablePanZoom(): void {
-    if (!this.currentPageElement) return;
-    
-    let isDragging = false;
-    let startX = 0;
-    let startY = 0;
-    let currentX = 0;
-    let currentY = 0;
-    
-    const iframe = this.currentPageElement;
-    
-    const startDrag = (e: MouseEvent | TouchEvent) => {
-      isDragging = true;
-      
-      if (e instanceof MouseEvent) {
-        startX = e.clientX;
-        startY = e.clientY;
-      } else {
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-      }
-      
-      // Aktuális transform értékek kinyerése
-      const transformValue = iframe.style.transform;
-      const translateMatch = transformValue.match(/translate\((-?\d+(\.\d+)?)px, (-?\d+(\.\d+)?)px\)/);
-      
-      if (translateMatch) {
-        currentX = parseFloat(translateMatch[1]);
-        currentY = parseFloat(translateMatch[3]);
-      } else {
-        currentX = 0;
-        currentY = 0;
-      }
-    };
-    
-    const drag = (e: MouseEvent | TouchEvent) => {
-      if (!isDragging) return;
-      
-      let clientX, clientY;
-      
-      if (e instanceof MouseEvent) {
-        clientX = e.clientX;
-        clientY = e.clientY;
-      } else {
-        clientX = e.touches[0].clientX;
-        clientY = e.touches[0].clientY;
-      }
-      
-      const deltaX = clientX - startX;
-      const deltaY = clientY - startY;
-      
-      const newX = currentX + deltaX;
-      const newY = currentY + deltaY;
-      
-      iframe.style.transform = `scale(${this.zoomLevel}) translate(${newX}px, ${newY}px)`;
-    };
-    
-    const endDrag = () => {
-      isDragging = false;
-    };
-    
-    iframe.addEventListener('mousedown', startDrag);
-    iframe.addEventListener('touchstart', startDrag);
-    
-    window.addEventListener('mousemove', drag);
-    window.addEventListener('touchmove', drag);
-    
-    window.addEventListener('mouseup', endDrag);
-    window.addEventListener('touchend', endDrag);
-    
-    // Ezeket a referenciákat később felhasználjuk az események eltávolításához
-    this.panZoomListeners = {
-      startDrag,
-      drag,
-      endDrag
-    };
-  }
-  
-  /**
-   * Pásztázás letiltása
-   */
-  private panZoomListeners: any = null;
-  
-  private disablePanZoom(): void {
-    if (!this.currentPageElement || !this.panZoomListeners) return;
-    
-    const iframe = this.currentPageElement;
-    
-    iframe.removeEventListener('mousedown', this.panZoomListeners.startDrag);
-    iframe.removeEventListener('touchstart', this.panZoomListeners.startDrag);
-    
-    window.removeEventListener('mousemove', this.panZoomListeners.drag);
-    window.removeEventListener('touchmove', this.panZoomListeners.drag);
-    
-    window.removeEventListener('mouseup', this.panZoomListeners.endDrag);
-    window.removeEventListener('touchend', this.panZoomListeners.endDrag);
-    
-    iframe.style.transform = 'scale(1)';
-  }
-  
-  /**
    * Teljes képernyő váltás
    */
   public toggleFullscreen(): void {
@@ -654,14 +512,6 @@ class FlipbookEngine {
   }
   
   /**
-   * Oldal keresési funkció
-   */
-  public search(query: string): void {
-    // TODO: Keresési logika implementálása
-    // (Ez összetettebb téma, mivel az iframe-ek tartalma elkülönül)
-  }
-  
-  /**
    * Könyv bezárás, erőforrások felszabadítása
    */
   public destroy(): void {
@@ -675,9 +525,6 @@ class FlipbookEngine {
     if (this.rightButton) {
       this.rightButton.removeEventListener('click', this.nextPage);
     }
-    
-    // Nagyítás eseménykezelők eltávolítása
-    this.disablePanZoom();
   }
   
   // Segédfüggvény a keydown eseménykezelő referenciájához
@@ -690,241 +537,5 @@ class FlipbookEngine {
   };
 }
 
-// Type definíciók a kockadobó widgethez
-interface DiceResult {
-  value: number;
-  isSuccess: boolean;
-}
-
-/**
- * Kockadobó osztály
- */
-class DiceRoller {
-  private container: HTMLElement;
-  private results: DiceResult[] = [];
-  private diceImages: Record<number, string> = {
-    1: 'images/d1.png',
-    2: 'images/d2.png',
-    3: 'images/d3.png',
-    4: 'images/d4.png',
-    5: 'images/d5.png',
-    6: 'images/d6.png'
-  };
-  
-  constructor(container: HTMLElement) {
-    this.container = container;
-  }
-  
-  /**
-   * Kockák dobása
-   */
-  public roll(numDice: number = 3, successValue: number = 4): DiceResult[] {
-    this.results = [];
-    
-    for (let i = 0; i < numDice; i++) {
-      const roll = Math.floor(Math.random() * 6) + 1;
-      this.results.push({
-        value: roll,
-        isSuccess: roll >= successValue
-      });
-    }
-    
-    return this.results;
-  }
-  
-  /**
-   * Kockák megjelenítése
-   */
-  public renderDice(): void {
-    const diceContainer = document.createElement('div');
-    diceContainer.className = 'dice-results';
-    diceContainer.style.display = 'flex';
-    diceContainer.style.justifyContent = 'center';
-    diceContainer.style.gap = '10px';
-    diceContainer.style.marginTop = '20px';
-    
-    this.results.forEach(result => {
-      const img = document.createElement('img');
-      img.src = this.diceImages[result.value];
-      img.alt = `Kocka: ${result.value}`;
-      img.style.width = '80px';
-      img.style.height = '80px';
-      
-      // Sikeres dobás esetén zöld keret
-      if (result.isSuccess) {
-        img.style.border = '2px solid #00ff00';
-        img.style.borderRadius = '10px';
-      }
-      
-      diceContainer.appendChild(img);
-    });
-    
-    // Régi eredmények törlése és újak hozzáadása
-    const oldContainer = this.container.querySelector('.dice-results');
-    if (oldContainer) {
-      this.container.removeChild(oldContainer);
-    }
-    
-    this.container.appendChild(diceContainer);
-    
-    // Sikerek számának megjelenítése harci dobás esetén
-    if (this.results.length === 3) {
-      const successCount = this.results.filter(r => r.isSuccess).length;
-      
-      let successText = '';
-      switch (successCount) {
-        case 0:
-          successText = 'Nincs Siker';
-          break;
-        case 1:
-          successText = 'Egy Siker';
-          break;
-        case 2:
-          successText = 'Két Siker';
-          break;
-        case 3:
-          successText = 'Három Siker';
-          break;
-      }
-      
-      const successElement = document.createElement('div');
-      successElement.id = 'success-results';
-      successElement.style.background = 'black';
-      successElement.style.color = 'white';
-      successElement.style.display = 'inline-block';
-      successElement.style.padding = '5px 10px';
-      successElement.style.borderRadius = '5px';
-      successElement.style.marginTop = '10px';
-      successElement.style.fontSize = '1.2rem';
-      successElement.textContent = successText;
-      
-      // Régi eredmény eltávolítása ha létezik
-      const oldSuccess = this.container.querySelector('#success-results');
-      if (oldSuccess) {
-        this.container.removeChild(oldSuccess);
-      }
-      
-      this.container.appendChild(successElement);
-    }
-  }
-  
-  /**
-   * Sikerek számának lekérdezése
-   */
-  public getSuccessCount(): number {
-    return this.results.filter(r => r.isSuccess).length;
-  }
-}
-
-/**
- * Kockadobó Widget interfész
- */
-class DiceWidget {
-  private container: HTMLElement;
-  private diceRoller: DiceRoller;
-  private numDice: number;
-  private isVisible: boolean = false;
-  
-  constructor(options: {
-    containerId: string,
-    numDice: number,
-    title: string,
-    buttonText?: string,
-    successValue?: number
-  }) {
-    const container = document.getElementById(options.containerId);
-    if (!container) throw new Error(`Container with ID "${options.containerId}" not found`);
-    
-    this.container = container;
-    this.numDice = options.numDice;
-    this.diceRoller = new DiceRoller(container);
-    
-    this.initializeUI(options.title, options.buttonText || 'Dobás');
-  }
-  
-  /**
-   * UI inicializálása
-   */
-  private initializeUI(title: string, buttonText: string): void {
-    this.container.innerHTML = '';
-    this.container.style.display = 'none';
-    this.container.style.position = 'fixed';
-    this.container.style.zIndex = '1000';
-    this.container.style.background = 'rgba(0, 0, 0, 0.8)';
-    this.container.style.borderRadius = '10px';
-    this.container.style.padding = '10px';
-    this.container.style.boxShadow = '0 0 20px rgba(0, 0, 0, 0.7)';
-    
-    // Widget tartalom létrehozása
-    const content = document.createElement('div');
-    content.style.textAlign = 'center';
-    content.style.marginTop = '20px';
-    
-    // Cím
-    const titleElement = document.createElement('h3');
-    titleElement.className = 'dice-title';
-    titleElement.textContent = title;
-    titleElement.style.fontFamily = "'Cinzel', serif";
-    titleElement.style.color = 'white';
-    titleElement.style.background = 'black';
-    titleElement.style.display = 'inline-block';
-    titleElement.style.padding = '10px';
-    titleElement.style.borderRadius = '5px';
-    titleElement.style.textAlign = 'center';
-    titleElement.style.marginBottom = '10px';
-    
-    // Dobás gomb
-    const button = document.createElement('button');
-    button.className = 'dice-button';
-    button.textContent = buttonText;
-    button.style.padding = '10px 20px';
-    button.style.marginTop = '10px';
-    button.style.background = '#7f00ff';
-    button.style.color = 'white';
-    button.style.border = 'none';
-    button.style.borderRadius = '5px';
-    button.style.fontSize = '1.1rem';
-    button.style.cursor = 'pointer';
-    button.style.boxShadow = '0 0 10px rgba(127, 0, 255, 0.5)';
-    
-    button.addEventListener('click', () => this.rollDice());
-    
-    // Elemek hozzáadása
-    content.appendChild(titleElement);
-    content.appendChild(document.createElement('br'));
-    content.appendChild(button);
-    
-    this.container.appendChild(content);
-  }
-  
-  /**
-   * Kockadobás
-   */
-  private rollDice(): void {
-    this.diceRoller.roll(this.numDice);
-    this.diceRoller.renderDice();
-  }
-  
-  /**
-   * Widget megjelenítése/elrejtése
-   */
-  public toggle(): void {
-    this.isVisible = !this.isVisible;
-    this.container.style.display = this.isVisible ? 'block' : 'none';
-  }
-  
-  /**
-   * Widget elrejtése
-   */
-  public hide(): void {
-    this.isVisible = false;
-    this.container.style.display = 'none';
-  }
-}
-
-/**
- * Exportálás
- */
+// Exportálás
 (window as any).FlipbookEngine = FlipbookEngine;
-(window as any).DiceRoller = DiceRoller;
-(window as any).DiceWidget = DiceWidget;
