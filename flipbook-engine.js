@@ -90,7 +90,7 @@ class FlipbookEngine {
         this.leftButton.style.top = '50%';
         this.leftButton.style.transform = 'translateY(-50%)';
         this.leftButton.style.fontSize = '36px';
-        this.leftButton.style.color = 'rgba(255, 255, 255, 0.7)';
+        this.leftButton.style.color = 'rgba(199, 0, 0, 1)';
         this.leftButton.style.cursor = 'pointer';
         this.leftButton.style.zIndex = '100';
         this.leftButton.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
@@ -111,7 +111,7 @@ class FlipbookEngine {
         this.rightButton.style.top = '50%';
         this.rightButton.style.transform = 'translateY(-50%)';
         this.rightButton.style.fontSize = '36px';
-        this.rightButton.style.color = 'rgba(255, 255, 255, 0.7)';
+        this.rightButton.style.color = 'rgba(0, 199, 0, 1)';
         this.rightButton.style.cursor = 'pointer';
         this.rightButton.style.zIndex = '100';
         this.rightButton.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
@@ -127,69 +127,47 @@ class FlipbookEngine {
         const controlsContainer = document.createElement('div');
         controlsContainer.className = 'controls-container';
         controlsContainer.style.position = 'fixed';
-        controlsContainer.style.bottom = '20px';
-        controlsContainer.style.left = '50%';
-        controlsContainer.style.transform = 'translateX(-50%)';
-        controlsContainer.style.zIndex = '100';
+        controlsContainer.style.bottom = '0'; // Alulra helyezi
+        controlsContainer.style.left = '0'; // Balra igazítja
+        controlsContainer.style.width = '100%'; // Teljes szélességű lesz
+        controlsContainer.style.zIndex = '9999'; // Garantálja, hogy minden felett lesz
         controlsContainer.style.display = 'flex';
-        controlsContainer.style.gap = '10px';
-        controlsContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
-        controlsContainer.style.padding = '10px';
-        controlsContainer.style.borderRadius = '20px';
+        controlsContainer.style.justifyContent = 'right'; // Középre igazítja a gombokat
+        controlsContainer.style.gap = '-200px';
+        controlsContainer.style.backgroundColor = 'rgba(0, 0, 0, 0)'; // Sötét háttér
+        controlsContainer.style.padding = '0px 0'; // Csak fent-lent van padding
         // Könyvjelző mentés gomb
         const saveButton = document.createElement('button');
         saveButton.className = 'control-button save';
-        saveButton.innerHTML = '🔖';
-        saveButton.style.width = '40px';
-        saveButton.style.height = '40px';
-        saveButton.style.borderRadius = '50%';
-        saveButton.style.border = 'none';
-        saveButton.style.backgroundColor = '#7f00ff';
-        saveButton.style.color = 'white';
-        saveButton.style.fontSize = '20px';
-        saveButton.style.cursor = 'pointer';
+        saveButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+</svg>`;
         saveButton.title = 'Könyvjelző mentése';
         saveButton.addEventListener('click', () => this.saveBookmark());
         // Könyvjelző betöltés gomb
         const loadButton = document.createElement('button');
         loadButton.className = 'control-button load';
-        loadButton.innerHTML = '📑';
-        loadButton.style.width = '40px';
-        loadButton.style.height = '40px';
-        loadButton.style.borderRadius = '50%';
-        loadButton.style.border = 'none';
-        loadButton.style.backgroundColor = '#7f00ff';
-        loadButton.style.color = 'white';
-        loadButton.style.fontSize = '20px';
-        loadButton.style.cursor = 'pointer';
+        loadButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+</svg>`;
         loadButton.title = 'Könyvjelző betöltése';
         loadButton.addEventListener('click', () => this.loadBookmark());
         // Teljes képernyő gomb
         const fullscreenButton = document.createElement('button');
         fullscreenButton.className = 'control-button fullscreen';
-        fullscreenButton.innerHTML = '⛶';
-        fullscreenButton.style.width = '40px';
-        fullscreenButton.style.height = '40px';
-        fullscreenButton.style.borderRadius = '50%';
-        fullscreenButton.style.border = 'none';
-        fullscreenButton.style.backgroundColor = '#7f00ff';
-        fullscreenButton.style.color = 'white';
-        fullscreenButton.style.fontSize = '20px';
-        fullscreenButton.style.cursor = 'pointer';
+        fullscreenButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+</svg>`;
         fullscreenButton.title = 'Teljes képernyő';
         fullscreenButton.addEventListener('click', () => this.toggleFullscreen());
         // Némítás gomb
         const muteButton = document.createElement('button');
         muteButton.className = 'control-button mute';
-        muteButton.innerHTML = '🔊';
-        muteButton.style.width = '40px';
-        muteButton.style.height = '40px';
-        muteButton.style.borderRadius = '50%';
-        muteButton.style.border = 'none';
-        muteButton.style.backgroundColor = '#7f00ff';
-        muteButton.style.color = 'white';
-        muteButton.style.fontSize = '20px';
-        muteButton.style.cursor = 'pointer';
+        muteButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+</svg>`;
         muteButton.title = 'Hang némítása';
         muteButton.addEventListener('click', () => this.toggleMute(muteButton));
         // Gombok hozzáadása a vezérlő konténerhez
@@ -258,6 +236,29 @@ class FlipbookEngine {
             const pagePath = pageNumber === 0 ? 'pages/borito.html' : `pages/${pageNumber}.html`;
             this.currentPageElement.src = pagePath;
             this.currentPage = pageNumber;
+            // Beállítjuk a data-page attribútumot a body tag-en
+            document.body.setAttribute('data-page', pageNumber.toString());
+            // Az iframe betöltése után állítsuk be a tartalom méretét
+            this.currentPageElement.onload = () => {
+                var _a;
+                try {
+                    const iframeDoc = (_a = this.currentPageElement) === null || _a === void 0 ? void 0 : _a.contentDocument;
+                    if (iframeDoc) {
+                        // CSS szabály hozzáadása, hogy a tartalom ne érjen le a vezérlősávig
+                        const style = iframeDoc.createElement('style');
+                        style.textContent = `
+              body {
+                padding-bottom: 70px !important;
+                box-sizing: border-box;
+              }
+            `;
+                        iframeDoc.head.appendChild(style);
+                    }
+                }
+                catch (e) {
+                    console.error('Nem sikerült módosítani az iframe tartalmát:', e);
+                }
+            };
             // Navigációs gombok frissítése
             this.updateNavigationVisibility();
         }
@@ -269,7 +270,7 @@ class FlipbookEngine {
         if (this.isAnimating || this.currentPage >= this.totalPages)
             return;
         // Csak bizonyos oldalszámig engedélyezünk lapozást
-        const maxFreePageNavigation = 3; // Ezt az értéket állítsd be, ameddig lapozni lehet
+        const maxFreePageNavigation = 2; // Ezt az értéket állítsd be, ameddig lapozni lehet
         if (this.currentPage >= maxFreePageNavigation) {
             this.showNotification('Ezen a ponton csak linkeken keresztül folytathatod az olvasást.');
             return;
@@ -381,13 +382,13 @@ class FlipbookEngine {
     }
     /**
      * Navigációs gombok láthatóságának frissítése az aktuális oldal alapján
-     */
+   */
     updateNavigationVisibility() {
-        const maxFreePageNavigation = 3; // Ezt állítsd be, ameddig a lapozás elérhető
+        const maxFreePageNavigation = 2; // Ezt állítsd be, ameddig a lapozás elérhető
         // Bal gomb frissítése (hátra lapozás)
         if (this.leftButton) {
-            if (this.currentPage <= 0) {
-                this.leftButton.style.opacity = '0.3';
+            if (this.currentPage <= 0 || this.currentPage >= 2) { // Itt a módosítás: hozzáadva a || this.currentPage >= 4 feltétel
+                this.leftButton.style.opacity = '0';
                 this.leftButton.style.pointerEvents = 'none';
             }
             else {
@@ -398,7 +399,7 @@ class FlipbookEngine {
         // Jobb gomb frissítése (előre lapozás)
         if (this.rightButton) {
             if (this.currentPage >= maxFreePageNavigation) {
-                this.rightButton.style.opacity = '0.3';
+                this.rightButton.style.opacity = '0';
                 this.rightButton.style.pointerEvents = 'none';
             }
             else {
@@ -459,7 +460,17 @@ class FlipbookEngine {
     toggleMute(button) {
         this.isMuted = !this.isMuted;
         if (button) {
-            button.innerHTML = this.isMuted ? '🔇' : '🔊';
+            // Ikoncsere
+            button.innerHTML = this.isMuted ?
+                `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        <line x1="23" y1="9" x2="17" y2="15"></line>
+        <line x1="17" y1="9" x2="23" y2="15"></line>
+      </svg>` :
+                `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+      </svg>`;
         }
     }
     /**
