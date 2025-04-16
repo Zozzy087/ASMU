@@ -67,6 +67,16 @@
       background: #a020f0;
       transform: scale(1.05);
     }
+	.dice-title {
+  font-family: 'Cinzel', serif;
+  color: white;
+  background: black;
+  display: inline-block;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  margin-bottom: 10px;
+}
   </style>
 </head>
 <body>
@@ -133,53 +143,90 @@ végre az akcióidat.</p>
     }
 
     function rollDice() {
-      const diceImages = {
-          1: 'images/d1.png',
-          2: 'images/d2.png',
-          3: 'images/d3.png',
-          4: 'images/d4.png',
-          5: 'images/d5.png',
-          6: 'images/d6.png'
-      };
+  const possiblePaths = [
+    {
+      1: '../images/d1.png',
+      2: '../images/d2.png',
+      3: '../images/d3.png',
+      4: '../images/d4.png',
+      5: '../images/d5.png',
+      6: '../images/d6.png'
+    },
+  ];
+  
+  let diceImages = possiblePaths[0];
+  
+  const diceContainer = document.getElementById('dice-images');
+  const successResults = document.getElementById('success-results');
+  diceContainer.innerHTML = '';
 
-      const diceContainer = document.getElementById('dice-images');
-      const successResults = document.getElementById('success-results');
-      diceContainer.innerHTML = '';
+  let successes = 0;
 
-      let successes = 0;
-
-      for (let i = 0; i < 3; i++) {
-          const roll = Math.floor(Math.random() * 6) + 1;
-          const img = document.createElement('img');
-          img.src = diceImages[roll];
-          img.alt = `Kocka: ${roll}`;
-          img.style.width = '80px';
-          img.style.height = '80px';
-          diceContainer.appendChild(img);
-
-          if (roll >= 4) {
-              successes++;
-          }
-      }
-
-      let successText = '';
-      switch (successes) {
-          case 0:
-              successText = 'Nincs Siker';
-              break;
-          case 1:
-              successText = 'Egy Siker';
-              break;
-          case 2:
-              successText = 'Két Siker';
-              break;
-          case 3:
-              successText = 'Három Siker';
-              break;
-      }
-
-      successResults.textContent = successText;
+  for (let i = 0; i < 3; i++) {
+    const roll = Math.floor(Math.random() * 6) + 1;
+    const img = document.createElement('img');
+    img.src = diceImages[roll];
+    img.alt = `Kocka: ${roll}`;
+    img.style.width = '80px';
+    img.style.height = '80px';
+    
+    // Sikeres dobás esetén zöld keret hozzáadása
+    if (roll >= 4) {
+      img.style.border = '3px solid #00ff00'; // Zöld keret
+      img.style.borderRadius = '10px';        // Kerekített sarkok
+      successes++;
     }
+    
+    // Hibakezelés
+    let pathIndex = 0;
+    img.onerror = function() {
+      pathIndex++;
+      if (pathIndex < possiblePaths.length) {
+        this.src = possiblePaths[pathIndex][roll];
+      } else {
+        // Helyettesítő szöveg
+        const rollText = document.createElement('div');
+        rollText.textContent = roll;
+        rollText.style.width = '80px';
+        rollText.style.height = '80px';
+        rollText.style.backgroundColor = '#7f00ff';
+        rollText.style.color = 'white';
+        rollText.style.display = 'flex';
+        rollText.style.alignItems = 'center';
+        rollText.style.justifyContent = 'center';
+        rollText.style.fontSize = '36px';
+        rollText.style.borderRadius = '10px';
+        
+        // Sikeres dobás esetén zöld keret a tartalék elemre is
+        if (roll >= 4) {
+          rollText.style.border = '3px solid #00ff00';
+        }
+        
+        diceContainer.appendChild(rollText);
+      }
+    };
+    
+    diceContainer.appendChild(img);
+  }
+
+  let successText = '';
+  switch (successes) {
+    case 0:
+      successText = 'Nincs Siker';
+      break;
+    case 1:
+      successText = 'Egy Siker';
+      break;
+    case 2:
+      successText = 'Két Siker';
+      break;
+    case 3:
+      successText = 'Három Siker';
+      break;
+  }
+
+  successResults.textContent = successText;
+}
 </script>
 
 </body>
