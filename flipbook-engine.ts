@@ -22,6 +22,14 @@ class FlipbookEngine {
   private leftButton: HTMLElement | null = null;
   private rightButton: HTMLElement | null = null;
   
+  // Fejezet adatok
+  private chapters: Array<{id: string, title: string, page: number}> = [
+    { id: "0", title: "Borító", page: 0 },
+    { id: "1", title: "Kezdés", page: 1 },
+    { id: "2", title: "Karakteralkotás", page: 2 }
+    // További fejezetek itt adhatók hozzá
+  ];
+  
   constructor(options: {
     containerId: string,
     totalPages: number,
@@ -152,24 +160,15 @@ controlsContainer.style.gap = '-200px';
 controlsContainer.style.backgroundColor = 'rgba(0, 0, 0, 0)'; // Sötét háttér
 controlsContainer.style.padding = '0px 0'; // Csak fent-lent van padding
     
-    // Könyvjelző mentés gomb
-const saveButton = document.createElement('button');
-saveButton.className = 'control-button save';
-saveButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+    // Navigáció gomb
+const navButton = document.createElement('button');
+navButton.className = 'control-button navigation';
+navButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+  <polyline points="9 22 9 12 15 12 15 22"></polyline>
 </svg>`;
-saveButton.title = 'Könyvjelző mentése';
-    saveButton.addEventListener('click', () => this.saveBookmark());
-    
-    // Könyvjelző betöltés gomb
-const loadButton = document.createElement('button');
-loadButton.className = 'control-button load';
-loadButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-</svg>`;
-loadButton.title = 'Könyvjelző betöltése';
-    loadButton.addEventListener('click', () => this.loadBookmark());
+navButton.title = 'Navigáció';
+    navButton.addEventListener('click', () => this.showNavigationMenu());
     
     // Teljes képernyő gomb
 const fullscreenButton = document.createElement('button');
@@ -191,8 +190,7 @@ muteButton.title = 'Hang némítása';
     muteButton.addEventListener('click', () => this.toggleMute(muteButton));
     
     // Gombok hozzáadása a vezérlő konténerhez
-    controlsContainer.appendChild(saveButton);
-    controlsContainer.appendChild(loadButton);
+    controlsContainer.appendChild(navButton);
     controlsContainer.appendChild(fullscreenButton);
     controlsContainer.appendChild(muteButton);
     
@@ -397,29 +395,92 @@ muteButton.title = 'Hang némítása';
   }
   
   /**
-   * Könyvjelző mentése
+   * Navigációs menü megjelenítése
    */
-  public saveBookmark(): void {
-    localStorage.setItem('flipbook_bookmark', this.currentPage.toString());
-    this.showNotification('Könyvjelző mentve: ' + this.currentPage + '. oldal');
-  }
-  
-  /**
-   * Könyvjelző betöltése
-   */
-  public loadBookmark(): void {
-    const savedPage = localStorage.getItem('flipbook_bookmark');
-    if (savedPage) {
-      const pageNum = parseInt(savedPage, 10);
-      if (!isNaN(pageNum) && pageNum >= 0 && pageNum <= this.totalPages) {
-        this.loadPage(pageNum);
-        this.showNotification('Könyvjelző betöltve: ' + pageNum + '. oldal');
-      } else {
-        this.showNotification('Érvénytelen könyvjelző!');
-      }
-    } else {
-      this.showNotification('Nincs mentett könyvjelző!');
+  public showNavigationMenu(): void {
+    // Ellenőrizzük, hogy a navigációs menü már látható-e
+    const existingMenu = document.querySelector('.navigation-menu');
+    if (existingMenu) {
+      existingMenu.remove();
+      return;
     }
+    
+    // Menü létrehozása
+    const menu = document.createElement('div');
+    menu.className = 'navigation-menu';
+    menu.style.position = 'fixed';
+    menu.style.bottom = '70px';
+    menu.style.right = '20px';
+    menu.style.width = '250px';
+    menu.style.maxHeight = '60vh';
+    menu.style.overflowY = 'auto';
+    menu.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+    menu.style.borderRadius = '10px';
+    menu.style.padding = '15px';
+    menu.style.zIndex = '10000';
+    menu.style.boxShadow = '0 0 20px rgba(0, 0, 0, 0.5)';
+    
+    // Menü cím
+    const title = document.createElement('div');
+    title.style.color = 'white';
+    title.style.fontSize = '18px';
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '15px';
+    title.style.textAlign = 'center';
+    title.textContent = 'Navigáció';
+    menu.appendChild(title);
+    
+    // Fejezetek listázása
+    this.chapters.forEach(chapter => {
+      const item = document.createElement('div');
+      item.className = 'nav-item';
+      item.style.color = 'white';
+      item.style.padding = '10px';
+      item.style.margin = '5px 0';
+      item.style.cursor = 'pointer';
+      item.style.borderRadius = '5px';
+      item.style.transition = 'background-color 0.2s';
+      
+      // Jelenlegi oldal kiemelése
+      if (this.currentPage === chapter.page) {
+        item.style.backgroundColor = 'rgba(127, 0, 255, 0.5)';
+        item.style.fontWeight = 'bold';
+      }
+      
+      item.textContent = `${chapter.title} (${chapter.page}. oldal)`;
+      
+      // Kattintás eseménykezelő
+      item.addEventListener('click', () => {
+        this.loadPage(chapter.page);
+        menu.remove();
+      });
+      
+      // Hover effekt
+      item.addEventListener('mouseenter', () => {
+        if (this.currentPage !== chapter.page) {
+          item.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+        }
+      });
+      
+      item.addEventListener('mouseleave', () => {
+        if (this.currentPage !== chapter.page) {
+          item.style.backgroundColor = 'transparent';
+        }
+      });
+      
+      menu.appendChild(item);
+    });
+    
+    // Menü hozzáadása a dokumentumhoz
+    document.body.appendChild(menu);
+    
+    // Kattintás bárhová a menün kívül bezárja azt
+    document.addEventListener('click', (e) => {
+      const target = e.target as Node;
+      if (menu && !menu.contains(target) && !(target as Element).closest('.control-button.navigation')) {
+        menu.remove();
+      }
+    }, { once: true });
   }
   
   /**

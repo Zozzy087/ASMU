@@ -77,6 +77,29 @@
   </style>
 </head>
 <body>
+
+  <!-- === TELEPÍTÉS BANNER – NE MOZGASS SEMMIT, CSAK MÁSOLD IDE === -->
+  <div id="install-banner" style="
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      background: #7f00ff;
+      color: white;
+      text-align: center;
+      padding: 12px;
+      font-family: 'Cinzel', serif;
+      z-index: 10000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      cursor: pointer;
+    ">
+    📲 Telepítsd az alkalmazást a főképernyőre!<br>
+    <small style="font-size:0.9em; opacity:0.8;">
+      1. Kattints ide<br>
+      2. Válaszd: “Hozzáadás a Főképernyőhöz”
+    </small>
+  </div>
+
   <!-- Betöltő képernyő -->
   <div id="loading-screen">
     <div class="loader"></div>
@@ -119,5 +142,35 @@
       }
     });
   </script>
+  
+    <!-- === INSTALL PROMPT HANDLER === -->
+  <script>
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('install-banner').style.display = 'block';
+    });
+
+    document.getElementById('install-banner')
+      .addEventListener('click', async () => {
+        const banner = document.getElementById('install-banner');
+        banner.style.display = 'none';
+        await deferredPrompt.prompt();
+        deferredPrompt = null;
+      });
+  </script>
+
+  
+  
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+      .register('./service-worker.js')
+      .then(() => console.log('Service Worker regisztrálva'))
+      .catch(err => console.error('SW hiba:', err));
+  }
+</script>
+  
 </body>
 </html>

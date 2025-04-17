@@ -1,494 +1,109 @@
-// Service Worker a PWA működéshez
-const CACHE_NAME = 'kalandkonyv-cache-v1';
+// ► 1. Cache név verzió: ha módosítasz valamit, növeld pl. '…-v2'-re
+const CACHE_NAME = 'kalandkonyv-cache-v2';
 
-// Cache-elni kívánt erőforrások
-const RESOURCES_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/flipbook-engine.js',
-  '/manifest.json',
-  '/sounds/pageturn-102978.mp3',
-  '/images/d1.png',
-  '/images/d2.png',
-  '/images/d3.png',
-  '/images/d4.png',
-  '/images/d5.png',
-  '/images/d6.png',
-  '/files/icon-512.png',
-  'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap',
-  'pages/borito.html',
-  'pages/1.html',
- 'pages/2.html',
- 'pages/3.html',
- 'pages/4.html',
- 'pages/5.html',
- 'pages/6.html',
- 'pages/7.html',
- 'pages/8.html',
- 'pages/9.html',
- 'pages/10.html',
- 'pages/11.html',
- 'pages/12.html',
- 'pages/13.html',
- 'pages/14.html',
- 'pages/15.html',
- 'pages/16.html',
- 'pages/17.html',
- 'pages/18.html',
- 'pages/19.html',
- 'pages/20.html',
- 'pages/21.html',
- 'pages/22.html',
- 'pages/23.html',
- 'pages/24.html',
- 'pages/25.html',
- 'pages/26.html',
- 'pages/27.html',
- 'pages/28.html',
- 'pages/29.html',
- 'pages/30.html',
- 'pages/31.html',
- 'pages/32.html',
- 'pages/33.html',
- 'pages/34.html',
- 'pages/35.html',
- 'pages/36.html',
- 'pages/37.html',
- 'pages/38.html',
- 'pages/39.html',
- 'pages/40.html',
- 'pages/41.html',
- 'pages/42.html',
- 'pages/43.html',
- 'pages/44.html',
- 'pages/45.html',
- 'pages/46.html',
- 'pages/47.html',
- 'pages/48.html',
- 'pages/49.html',
- 'pages/50.html',
- 'pages/51.html',
- 'pages/52.html',
- 'pages/53.html',
- 'pages/54.html',
- 'pages/55.html',
- 'pages/56.html',
- 'pages/57.html',
- 'pages/58.html',
- 'pages/59.html',
- 'pages/60.html',
- 'pages/61.html',
- 'pages/62.html',
- 'pages/63.html',
- 'pages/64.html',
- 'pages/65.html',
- 'pages/66.html',
- 'pages/67.html',
- 'pages/68.html',
- 'pages/69.html',
- 'pages/70.html',
- 'pages/71.html',
- 'pages/72.html',
- 'pages/73.html',
- 'pages/74.html',
- 'pages/75.html',
- 'pages/76.html',
- 'pages/77.html',
- 'pages/78.html',
- 'pages/79.html',
- 'pages/80.html',
- 'pages/81.html',
- 'pages/82.html',
- 'pages/83.html',
- 'pages/84.html',
- 'pages/85.html',
- 'pages/86.html',
- 'pages/87.html',
- 'pages/88.html',
- 'pages/89.html',
- 'pages/90.html',
- 'pages/91.html',
- 'pages/92.html',
- 'pages/93.html',
- 'pages/94.html',
- 'pages/95.html',
- 'pages/96.html',
- 'pages/97.html',
- 'pages/98.html',
- 'pages/99.html',
- 'pages/100.html',
- 'pages/101.html',
- 'pages/102.html',
- 'pages/103.html',
- 'pages/104.html',
- 'pages/105.html',
- 'pages/106.html',
- 'pages/107.html',
- 'pages/108.html',
- 'pages/109.html',
- 'pages/110.html',
- 'pages/111.html',
- 'pages/112.html',
- 'pages/113.html',
- 'pages/114.html',
- 'pages/115.html',
- 'pages/116.html',
- 'pages/117.html',
- 'pages/118.html',
- 'pages/119.html',
- 'pages/120.html',
- 'pages/121.html',
- 'pages/122.html',
- 'pages/123.html',
- 'pages/124.html',
- 'pages/125.html',
- 'pages/126.html',
- 'pages/127.html',
- 'pages/128.html',
- 'pages/129.html',
- 'pages/130.html',
- 'pages/131.html',
- 'pages/132.html',
- 'pages/133.html',
- 'pages/134.html',
- 'pages/135.html',
- 'pages/136.html',
- 'pages/137.html',
- 'pages/138.html',
- 'pages/139.html',
- 'pages/140.html',
- 'pages/141.html',
- 'pages/142.html',
- 'pages/143.html',
- 'pages/144.html',
- 'pages/145.html',
- 'pages/146.html',
- 'pages/147.html',
- 'pages/148.html',
- 'pages/149.html',
- 'pages/150.html',
- 'pages/151.html',
- 'pages/152.html',
- 'pages/153.html',
- 'pages/154.html',
- 'pages/155.html',
- 'pages/156.html',
- 'pages/157.html',
- 'pages/158.html',
- 'pages/159.html',
- 'pages/160.html',
- 'pages/161.html',
- 'pages/162.html',
- 'pages/163.html',
- 'pages/164.html',
- 'pages/165.html',
- 'pages/166.html',
- 'pages/167.html',
- 'pages/168.html',
- 'pages/169.html',
- 'pages/170.html',
- 'pages/171.html',
- 'pages/172.html',
- 'pages/173.html',
- 'pages/174.html',
- 'pages/175.html',
- 'pages/176.html',
- 'pages/177.html',
- 'pages/178.html',
- 'pages/179.html',
- 'pages/180.html',
- 'pages/181.html',
- 'pages/182.html',
- 'pages/183.html',
- 'pages/184.html',
- 'pages/185.html',
- 'pages/186.html',
- 'pages/187.html',
- 'pages/188.html',
- 'pages/189.html',
- 'pages/190.html',
- 'pages/191.html',
- 'pages/192.html',
- 'pages/193.html',
- 'pages/194.html',
- 'pages/195.html',
- 'pages/196.html',
- 'pages/197.html',
- 'pages/198.html',
- 'pages/199.html',
- 'pages/200.html',
- 'pages/201.html',
- 'pages/202.html',
- 'pages/203.html',
- 'pages/204.html',
- 'pages/205.html',
- 'pages/206.html',
- 'pages/207.html',
- 'pages/208.html',
- 'pages/209.html',
- 'pages/210.html',
- 'pages/211.html',
- 'pages/212.html',
- 'pages/213.html',
- 'pages/214.html',
- 'pages/215.html',
- 'pages/216.html',
- 'pages/217.html',
- 'pages/218.html',
- 'pages/219.html',
- 'pages/220.html',
- 'pages/221.html',
- 'pages/222.html',
- 'pages/223.html',
- 'pages/224.html',
- 'pages/225.html',
- 'pages/226.html',
- 'pages/227.html',
- 'pages/228.html',
- 'pages/229.html',
- 'pages/230.html',
- 'pages/231.html',
- 'pages/232.html',
- 'pages/233.html',
- 'pages/234.html',
- 'pages/235.html',
- 'pages/236.html',
- 'pages/237.html',
- 'pages/238.html',
- 'pages/239.html',
- 'pages/240.html',
- 'pages/241.html',
- 'pages/242.html',
- 'pages/243.html',
- 'pages/244.html',
- 'pages/245.html',
- 'pages/246.html',
- 'pages/247.html',
- 'pages/248.html',
- 'pages/249.html',
- 'pages/250.html',
- 'pages/251.html',
- 'pages/252.html',
- 'pages/253.html',
- 'pages/254.html',
- 'pages/255.html',
- 'pages/256.html',
- 'pages/257.html',
- 'pages/258.html',
- 'pages/259.html',
- 'pages/260.html',
- 'pages/261.html',
- 'pages/262.html',
- 'pages/263.html',
- 'pages/264.html',
- 'pages/265.html',
- 'pages/266.html',
- 'pages/267.html',
- 'pages/268.html',
- 'pages/269.html',
- 'pages/270.html',
- 'pages/271.html',
- 'pages/272.html',
- 'pages/273.html',
- 'pages/274.html',
- 'pages/275.html',
- 'pages/276.html',
- 'pages/277.html',
- 'pages/278.html',
- 'pages/279.html',
- 'pages/280.html',
- 'pages/281.html',
- 'pages/282.html',
- 'pages/283.html',
- 'pages/284.html',
- 'pages/285.html',
- 'pages/286.html',
- 'pages/287.html',
- 'pages/288.html',
- 'pages/289.html',
- 'pages/290.html',
- 'pages/291.html',
- 'pages/292.html',
- 'pages/293.html',
- 'pages/294.html',
- 'pages/295.html',
- 'pages/296.html',
- 'pages/297.html',
- 'pages/298.html',
- 'pages/299.html',
- 'pages/300.html',
- 'pages/301.html',
- 'pages/302.html',
- 'pages/303.html',
- 'pages/304.html',
- 'pages/305.html',
- 'pages/306.html',
- 'pages/307.html',
- 'pages/308.html',
- 'pages/309.html',
- 'pages/310.html',
- 'pages/311.html',
- 'pages/312.html',
- 'pages/313.html',
- 'pages/314.html',
- 'pages/315.html',
- 'pages/316.html',
- 'pages/317.html',
- 'pages/318.html',
- 'pages/319.html',
- 'pages/320.html',
- 'pages/321.html',
- 'pages/322.html',
- 'pages/323.html',
- 'pages/324.html',
- 'pages/325.html',
- 'pages/326.html',
- 'pages/327.html',
- 'pages/328.html',
- 'pages/329.html',
- 'pages/330.html',
- 'pages/331.html',
- 'pages/332.html',
- 'pages/333.html',
- 'pages/334.html',
- 'pages/335.html',
- 'pages/336.html',
- 'pages/337.html',
- 'pages/338.html',
- 'pages/339.html',
- 'pages/340.html',
- 'pages/341.html',
- 'pages/342.html',
- 'pages/343.html',
- 'pages/344.html',
- 'pages/345.html',
- 'pages/346.html',
- 'pages/347.html',
- 'pages/348.html',
- 'pages/349.html',
- 'pages/350.html',
- 'pages/351.html',
- 'pages/352.html',
- 'pages/353.html',
- 'pages/354.html',
- 'pages/355.html',
- 'pages/356.html',
- 'pages/357.html',
- 'pages/358.html',
- 'pages/359.html',
- 'pages/360.html',
- 'pages/361.html',
- 'pages/362.html',
- 'pages/363.html',
- 'pages/364.html',
- 'pages/365.html',
- 'pages/366.html',
- 'pages/367.html',
- 'pages/368.html',
- 'pages/369.html',
- 'pages/370.html',
- 'pages/371.html',
- 'pages/372.html',
- 'pages/373.html',
- 'pages/374.html',
- 'pages/375.html',
- 'pages/376.html',
- 'pages/377.html',
- 'pages/378.html',
- 'pages/379.html',
- 'pages/380.html',
- 'pages/381.html',
- 'pages/382.html',
- 'pages/383.html',
- 'pages/384.html',
- 'pages/385.html',
- 'pages/386.html',
- 'pages/387.html',
- 'pages/388.html',
- 'pages/389.html',
- 'pages/390.html',
- 'pages/391.html',
- 'pages/392.html',
- 'pages/393.html',
- 'pages/394.html',
- 'pages/395.html',
- 'pages/396.html',
- 'pages/397.html',
- 'pages/398.html',
- 'pages/399.html',
- 'pages/400.html'
+// ► 2. Statikus fájlok (install fázisban ezeket töltjük be először)
+const STATIC_ASSETS = [
+  '/',                  // start_url
+  'index.html',         // főindex
+  'offline.html',       // offline fallback oldal
+  'manifest.json',      // PWA manifest
+  'common-styles.css',  // közös CSS
+  'flipbook-engine.js', // motorod fő JS fájlja
+  'sounds/pageturn-102978.mp3',
+  'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap'
 ];
 
-// Service Worker telepítése
-self.addEventListener('install', (event) => {
+// ► 3. Dinamikusan generáljuk az oldalakat (borító + 1…300)
+//    totalPages változóval szabályozod, hány fejezeted van.
+const totalPages = 300;
+const PAGE_ASSETS = Array.from(
+  { length: totalPages + 1 },      // 0..300
+  (_, i) => i === 0
+    ? 'pages/borito.html'           // 0 → borító
+    : `pages/${i}.html`             // 1..300
+);
+
+// ► 4. Kulcsfontosságú képek és ikonok cache-first: 
+//    képeket nem kell mind listázni, de ha akarod, beteheted statikus listába is.
+//    (alternatíva: a fetch-handler magától cache-eli őket)
+const IMAGE_ASSETS = [
+  'images/d1.png','images/d2.png','images/d3.png',
+  'images/d4.png','images/d5.png','images/d6.png',
+  'files/icon-192.png','files/icon-512.png'
+];
+
+// ► 5. Összefűzzük a listákat egy tömbbé
+const RESOURCES_TO_CACHE = STATIC_ASSETS
+  .concat(IMAGE_ASSETS)  // ha statikusan akarod cache-elni a képeket
+  .concat(PAGE_ASSETS);
+
+// ► 6. Install – előcache-eljük a teljes listát
+self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Cache létrehozva');
-        return cache.addAll(RESOURCES_TO_CACHE);
-      })
+      .then(cache => cache.addAll(RESOURCES_TO_CACHE))
       .then(() => self.skipWaiting())
   );
 });
 
-// Service Worker aktiválása
-self.addEventListener('activate', (event) => {
-  // Régi cache-ek törlése
+// ► 7. Activate – régi cache-ek törlése, ha verzióváltás történt
+self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.filter((cacheName) => {
-          return cacheName !== CACHE_NAME;
-        }).map((cacheName) => {
-          return caches.delete(cacheName);
-        })
-      );
-    })
-    .then(() => self.clients.claim())
+    caches.keys().then(keys =>
+      Promise.all(
+        keys
+          .filter(k => k !== CACHE_NAME)
+          .map(k => caches.delete(k))
+      )
+    ).then(() => self.clients.claim())
   );
 });
 
-// Fetch esemény kezelése (offline működés)
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Cache-ből kiszolgálás, ha már cache-elve van
-        if (response) {
-          return response;
-        }
-        
-        // Ha nincs cache-elve, akkor fetch és cache
-        return fetch(event.request)
-          .then((response) => {
-            // Csak ha sikeres válasz és GET kérés
-            if (!response || response.status !== 200 || event.request.method !== 'GET') {
-              return response;
-            }
-            
-            // Válasz másolása, mert a stream csak egyszer használható
-            const responseToCache = response.clone();
-            
-            // HTML oldalak cache-elése, különös tekintettel a pages/ mappára
-            if (event.request.url.includes('/pages/') || 
-                responseToCache.headers.get('content-type')?.includes('text/html')) {
-              caches.open(CACHE_NAME)
-                .then((cache) => {
-                  cache.put(event.request, responseToCache);
-                });
-            }
-            
-            return response;
-          })
-          .catch((error) => {
-            // Offline fallback tartalom mutatása, ha hálózati hiba van
-            if (event.request.url.includes('/pages/')) {
-              return caches.match('/offline.html');
-            }
-            
-            console.error('Fetch hiba:', error);
-            throw error;
-          });
+// ► 8. Fetch – kéréskezelés
+self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+
+  // 8a) Képek / ikonok (cache-first stratégia)
+  if (url.pathname.startsWith('/images/') || url.pathname.startsWith('/files/')) {
+    event.respondWith(
+      caches.match(event.request).then(cached => {
+        if (cached) return cached;
+        return fetch(event.request).then(networkRes => {
+          if (networkRes.ok) {
+            const copy = networkRes.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+          }
+          return networkRes;
+        });
       })
+    );
+    return;
+  }
+
+  // 8b) Egyéb erőforrások (index, HTML oldalak, JS, CSS, manifest stb.)
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
+
+      return fetch(event.request).then(networkRes => {
+        // sikeres GET → cache-eljük is (pl. oldalakat)
+        if (networkRes.ok && event.request.method === 'GET') {
+          const copy = networkRes.clone();
+          // csak HTML oldalak és statikus fájlok kerüljenek cache-be
+          if (
+            url.pathname.startsWith('/pages/') ||
+            networkRes.headers.get('content-type')?.includes('text/html')
+          ) {
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+          }
+        }
+        return networkRes;
+      }).catch(() => {
+        // offline fallback: ha egy /pages/ oldal nem elérhető, mutassuk az offline.html-t
+        if (url.pathname.startsWith('/pages/')) {
+          return caches.match('offline.html');
+        }
+      });
+    })
   );
 });
